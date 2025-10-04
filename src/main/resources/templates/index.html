@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main}">
+
+<head>
+	<head>
+	    <title>Trang chủ - Quản Lý Khách Sạn</title>
+	</head>
+</head>
+<body>
+    <main layout:fragment="content">
+        <!-- Hero Section -->
+		<!--<section>-->
+		    <div class="container">
+		        <div class="search-box">
+		            <form th:action="@{/tim-kiem}" method="post" class="row g-2">
+		                
+		                <!-- Nhập thành phố -->
+		                <div class="col">
+		                    <input type="text" class="form-control form-control-lg custom-input" id="tenThanhPho"
+		                           name="tenThanhPho" placeholder="Nhập thành phố" required>
+		                </div>
+
+		                <!-- Ngày đến - Ngày trả -->
+		                <div class="col">
+		                    <input type="text" class="form-control form-control-lg custom-input"
+		                           placeholder="Ngày đến - Ngày trả">
+		                </div>
+
+		                <!-- Nút tìm -->
+		                <div class="col-auto">
+		                    <button type="submit" class="btn btn-primary btn-lg px-4">
+		                        Tìm
+		                    </button>
+		                </div>
+		            </form>
+		        </div>
+		    </div>
+		<!--</section>-->
+        
+        <!-- Thành phố nổi bật -->
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Tìm theo Thành phố</h2>
+				<div class="row">
+				    <div class="col-md-6 mb-4" 
+				         th:each="thanhPho, iterStat : ${listThanhPho}" 
+				         th:if="${iterStat.index < 2}">
+				        <a th:href="@{/khach-san/thanh-pho/{id}(id=${thanhPho.id})}" class="text-decoration-none">
+				            <div class="card card-hover border-0 overflow-hidden">
+				                <div class="position-relative">
+				                    <img th:src="@{${thanhPho.urlImage}}" 
+				                         class="card-img" 
+				                         alt="Thành phố" 
+				                         style="height: 300px; object-fit: cover;">
+				                    
+				                    <!-- Dùng flex để đặt tên và cờ trên cùng một hàng -->
+				                    <div class="position-absolute top-0 start-0 p-4 d-flex align-items-center gap-2">
+				                        <h3 class="fw-bold mb-0 text-white" th:text="${thanhPho.name}">Thành phố</h3>
+				                        <img th:src="@{/images/VietNamFlag.png}" 
+				                             alt="VietNam" 
+				                             style="height: 24px; width: auto;">
+				                    </div>
+				                </div>
+				            </div>
+				        </a>
+				    </div>
+				</div>
+
+             
+                <div class="row">
+                    <div class="col-md-4 mb-4" th:each="thanhPho, iterStat : ${listThanhPho}" th:if="${iterStat.index >= 2 and iterStat.index < 10}">
+                        <a th:href="@{/khach-san/thanh-pho/{id}(id=${thanhPho.id})}" class="text-decoration-none">
+                            <div class="card card-hover border-0 overflow-hidden">
+                                <div class="position-relative">
+                                    <img th:src="@{${thanhPho.urlImage}}" class="card-img" alt="Thành phố" style="height: 250px; object-fit: cover;">
+                                    <div class="position-absolute top-0 start-0 p-3 text-white">
+                                        <h4 class="fw-bold" th:text="${thanhPho.name}">Thành phố</h4>
+                                        <p class="mb-0 small">
+                                            <span th:text="${1 * 135}">0</span> chỗ ở
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Loại khách sạn -->
+        <section class="py-5 bg-light">
+            <div class="container">
+                <h2 class="text-center mb-5">Tìm theo Loại khách sạn</h2>
+                <div class="row">
+                    <div class="col-md-3 mb-4" th:each="loaiKhachSan : ${listLoaiKhachSan}">
+                        <a th:href="@{/khach-san/loai/{id}(id=${loaiKhachSan.id})}" class="text-decoration-none">
+                            <div class="card card-hover h-100 border-0">
+                                <img th:src="@{${loaiKhachSan.urlImage}}" class="card-img-top" alt="Loại khách sạn" style="height: 200px; object-fit: cover;">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title" th:text="${loaiKhachSan.name}">Loại khách sạn</h5>
+                                    <p class="card-text text-muted">
+                                        Gồm <span th:text="${1 * 135}">0</span> khách sạn
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Khách sạn nổi bật -->
+        <section class="py-5">
+            <div class="container">
+                <h2 class="text-center mb-5">Các Khách sạn nổi bật</h2>
+                <div class="row">
+                    <div class="col-md-3 mb-4" th:each="khachSan : ${listKhachSan}">
+                        <a th:href="@{/khach-san/{id}(id=${khachSan.id})}" class="text-decoration-none">
+                            <div class="card card-hover h-100 border-0">
+                                <img th:src="@{'/images/KhachSan/' + ${khachSan.id} + '.jpg'}" class="card-img-top" alt="Khách sạn" style="height: 200px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary" th:text="${khachSan.name}">Khách sạn</h5>
+                                    <p class="card-text text-muted mb-2" th:text="${khachSan.cityId}">Thành phố</p>
+                                    <p class="card-text text-muted mb-2" th:text="${khachSan.typeHotelId}">Loại khách sạn</p>
+                                    <div class="d-flex align-items-center">
+                                        <span class="rating-stars me-2">
+                                            <span th:each="i : ${#numbers.sequence(1, khachSan.evaluate)}">★</span>
+                                        </span>
+                                        <span class="fw-bold text-primary" th:text="${khachSan.evaluate} + ' sao'">5 sao</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+</body>
+</html>
