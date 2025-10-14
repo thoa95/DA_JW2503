@@ -72,12 +72,14 @@ CREATE TABLE bkap_room (
 
 
 -------------------------------------------------------
-
-INSERT ALL
-    INTO bkap_account (name, full_name, password, gender, phone, email, is_admin)
-         VALUES ('thoant', N'Nguyễn Thị Thoa', '123456', 1, '0909000001', 'admin@example.com', 1)
-    INTO bkap_account (name, full_name, password, gender, phone, email, is_admin)
-         VALUES ('user1', N'Nguyễn Phương Linh', '123456', 0, '0909000002', 'user1@example.com', 0)
+    INSERT INTO bkap_account (name, full_name, password, gender, phone, email, role)
+         VALUES ('thoant', N'Nguyễn Thị Thoa', '123456', 1, '0909000001', 'admin@example.com', 'ADMIN');
+    
+    INSERT INTO bkap_account (name, full_name, password, gender, phone, email, role)
+         VALUES ('user1', N'Nguyễn Phương Linh', '123456', 0, '0909000002', 'user1@example.com', 'CUSTOMER');
+         
+    INSERT INTO bkap_account (name, full_name, password, gender, phone, email, role)
+         VALUES ('staff1', N'Lê Hoàng Nam', '123456', 0, '0909000002', 'staff1@example.com', 'STAFF');     
 
 
     INSERT INTO bkap_city (name, description, url_image)
@@ -108,8 +110,7 @@ INSERT INTO bkap_hotel (name, address, phone, description, near_sea, evaluate, c
 
 
 INSERT INTO bkap_room (name, area, price, amenities, description, bed, hotel_id)
-         VALUES (N'Phòng Tiêu chuẩn', 15, 350, N'1 Giường đơn', N'Phòng này có một số trang thiết bị đơn giản.', 0, 7);
-         
+         VALUES (N'Phòng Tiêu chuẩn', 15, 350, N'1 Giường đơn', N'Phòng này có một số trang thiết bị đơn giản.', 0, 7);         
 INSERT INTO bkap_room (name, area, price, amenities, description, bed, hotel_id)
          VALUES (N'Phòng Trăng Mật', 15, 400, N'1 Giường đôi', N'Phòng này có máy lạnh, minibar và được cách âm. Phòng này được trang trí bằng hoa và bánh ngọt.', 1, 7);         
  INSERT   INTO bkap_room (name, area, price, amenities, description, bed, hotel_id)
