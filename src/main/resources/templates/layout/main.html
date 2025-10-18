@@ -15,7 +15,7 @@
     
     <style>
 		:root {
-		            --primary-color: #052C2C;
+		            --primary-color: #0097b2;
 		            --secondary-color: #7c3aed;
 		            --accent-color: #a855f7;
 		            --success-color: #10b981;
@@ -106,14 +106,57 @@
 				       border-color: #f39c12;     /* vàng đậm hơn khi focus */
 				       box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
 				   }
+				   
+				   /* Làm navbar cao bằng logo */
+				   .navbar {
+				       height: 120px; /* bằng chiều cao ảnh logo */
+				       padding-top: 0;
+				       padding-bottom: 0;
+				   }
+
+				   /* Menu chữ lớn hơn + căn giữa dọc */
+				   .navbar-nav .nav-link {
+				       color: #ffffff !important;
+				       font-size: 1.1rem; /* chữ to hơn */
+				       font-weight: 500;
+				       padding: 0 16px;
+				       display: flex;
+				       align-items: center;
+				       height: 80px; /* căn giữa dọc */
+				       transition: color 0.3s ease;
+				   }
+
+				   /* Màu khi hover */
+				   .navbar-nav .nav-link:hover {
+				       color: #FFD700 !important;
+				   }
+
+				   /* Màu khi đang ở trang hiện tại */
+				   .navbar-nav .nav-link.active {
+				       color: #FFD700 !important;
+				       font-weight: 600;
+				       border-bottom: 3px solid #FFD700; /* thêm gạch vàng nhỏ dưới */
+				   } .navbar-nav .nav-link.active {
+				       color: #ffffff !important;
+				       font-weight: 500;
+				       font-size: 1.05rem;
+				       transition: color 0.3s ease, transform 0.2s ease;
+				   }
+				   
+				 
+
+				   .navbar-nav .nav-link:hover {
+				       color: #FFD700 !important; /* vàng nhấn khi hover */
+				       transform: translateY(-2px);
+				   }
     </style>
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
+   <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
         <div class="container">
             <a class="navbar-brand" th:href="@{/}">
-                <img th:src="@{/images/Logo1.png}" alt="QLKS" class="d-inline-block align-text-top">
+                <img th:src="@{/images/logo12.png}" alt="QLKS" class="d-inline-block align-text-top">
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -128,7 +171,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/khach-san}">
+                        <a class="nav-link" th:href="@{/hotel}">
                             <i class="fas fa-hotel me-1"></i>Khách sạn
                         </a>
                     </li>

@@ -13,22 +13,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "bkap_booking")
+@Table(name = "bkap_refund")
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-public class Booking {
+public class Refund {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	private String accountId;
-	private Date checkInDate;
-	private Date checkOutDate;
-	private Integer totalAmount;
-	private Integer isCancel;
-	private String paymentStatus;
-	private Date createdAt;
+	private Long paymentId;
+	private Integer refundAmount;
+	private String refundReason;
+	private String refundStatus;
+	private Date refundDate;
 	private Integer deleteFlg;
-	
 }

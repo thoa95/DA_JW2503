@@ -3,6 +3,9 @@ drop table bkap_room;
 drop table bkap_booking;
 drop table bkap_hotel;
 
+QLDOUONG
+
+
 -- Bảng bkap_account
 CREATE TABLE bkap_account (
     account_id VARCHAR2(50) PRIMARY KEY,
@@ -139,15 +142,15 @@ INSERT INTO bkap_account (account_id, full_name, password, gender, phone, email,
      VALUES ('staff1', N'Lê Hoàng Nam', '123456', 0, '0909000002', 'staff1@example.com', 'STAFF');   
 
 
-Insert into BKAP_CITY (ID,NAME,DESCRIPTION,URL_IMAGE) values (3,'Hà Nội','Thành phố thủ đô Việt Nam','/images/ThanhPho/HaNoi.jpg');
-Insert into BKAP_CITY (ID,NAME,DESCRIPTION,URL_IMAGE) values (4,'TP. Hồ Chí Minh','Thành phố lớn nhất Việt Nam','/images/ThanhPho/HoChiMinh.jpg');
-Insert into BKAP_CITY (ID,NAME,DESCRIPTION,URL_IMAGE) values (5,'Đà Nẵng','Thành Phố Đà Nẵng','/images/ThanhPho/DaNang.jpg');
-Insert into BKAP_CITY (ID,NAME,DESCRIPTION,URL_IMAGE) values (6,'Huế','Thành Phố Huế','/images/ThanhPho/Hue.jpg');
-Insert into BKAP_CITY (ID,NAME,DESCRIPTION,URL_IMAGE) values (7,'Phú Quốc','Thành Phố Phú Quốc','/images/ThanhPho/PhuQuoc.jpg');
-Insert into BKAP_CITY (ID,NAME,DESCRIPTION,URL_IMAGE) values (8,'Sapa','Thành phố Sapa','/images/ThanhPho/Sapa.jpg');
+Insert into BKAP_CITY (NAME,DESCRIPTION,URL_IMAGE) values ('Hà Nội','Thành phố thủ đô Việt Nam','/images/ThanhPho/HaNoi.jpg');
+Insert into BKAP_CITY (NAME,DESCRIPTION,URL_IMAGE) values ('TP. Hồ Chí Minh','Thành phố lớn nhất Việt Nam','/images/ThanhPho/HoChiMinh.jpg');
+Insert into BKAP_CITY (NAME,DESCRIPTION,URL_IMAGE) values ('Đà Nẵng','Thành Phố Đà Nẵng','/images/ThanhPho/DaNang.jpg');
+Insert into BKAP_CITY (NAME,DESCRIPTION,URL_IMAGE) values ('Huế','Thành Phố Huế','/images/ThanhPho/Hue.jpg');
+Insert into BKAP_CITY (NAME,DESCRIPTION,URL_IMAGE) value ('Phú Quốc','Thành Phố Phú Quốc','/images/ThanhPho/PhuQuoc.jpg');
+Insert into BKAP_CITY (NAME,DESCRIPTION,URL_IMAGE) values ('Sapa','Thành phố Sapa','/images/ThanhPho/Sapa.jpg');
 
 
-INSERT INTO bkap_type_hotel (id, name, description, url_image) VALUES (N'Khách sạn', N'Khách sạn', 'Content/Images/LoaiKhachSan/KhachSan.jpg');
+INSERT INTO bkap_type_hotel (name, description, url_image) VALUES (N'Khách sạn', N'Khách sạn', 'Content/Images/LoaiKhachSan/KhachSan.jpg');
    INSERT INTO bkap_type_hotel (name, description, url_image) VALUES (N'Biệt thự', N'Biệt thự', 'Content/Images/LoaiKhachSan/BietThu.jpg');
     INSERT INTO bkap_type_hotel (name, description, url_image) VALUES (N'Resort', N'Resort', 'Content/Images/LoaiKhachSan/Resort.jpg');
     INSERT INTO bkap_type_hotel (name, description, url_image) VALUES (N'Nhà khách', N'Nhà khách', 'Content/Images/LoaiKhachSan/NhaKhach.jpg');

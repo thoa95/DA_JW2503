@@ -1,6 +1,7 @@
 package com.bkap.qlks.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class HotelService {
 		return hotelRepository.findAll();
 	}
 
-	public List<HotelDTO> getAllAsDTO() {
-		return hotelRepository.findAllAsDTO();
+	public List<HotelDTO> getAllAsDTO(Long id) {
+		return hotelRepository.findAllAsDTO(id);
 	}
 
 	public List<HotelDTO> searchByCity(String tenThanhPho) {
@@ -56,4 +57,12 @@ public class HotelService {
 //    private boolean filterByGiapBien(HotelDTO ks, List<Boolean> filter) {
 //        return filter == null || filter.isEmpty() || filter.contains(ks.getNearSea());
 //    }
+    
+    
+    public Optional<Hotel> getByHotelId(Long id) {
+    	return hotelRepository.findById(id);
+    }
+    
+    
+    
 }

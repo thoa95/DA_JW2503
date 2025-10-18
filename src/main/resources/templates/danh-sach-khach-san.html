@@ -65,7 +65,7 @@
                     <div id="hotelList">
                         <div class="row" th:if="${hotelList != null and !hotelList.empty}">
                             <div class="col-12 mb-4" th:each="hotel : ${hotelList}">
-                                <a th:href="@{/khach-san/{id}(id=${hotel.id})}" class="text-decoration-none">
+                                <a th:href="@{/hotel/{id}(id=${hotel.id})}" class="text-decoration-none">
                                     <div class="card card-hover">
                                         <div class="row g-0">
                                             <div class="col-md-4">
