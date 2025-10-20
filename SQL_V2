@@ -3,8 +3,6 @@ drop table bkap_room;
 drop table bkap_booking;
 drop table bkap_hotel;
 
-QLDOUONG
-
 
 -- Bảng bkap_account
 CREATE TABLE bkap_account (
@@ -78,16 +76,13 @@ CREATE TABLE bkap_room_amenity (
 CREATE TABLE bkap_booking (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     account_id VARCHAR2(50) REFERENCES bkap_account(account_id),
-    check_in_date DATE,
-    check_out_date DATE,
     total_amount NUMBER,
-    is_cancel NUMBER(1) CHECK (is_cancel IN (0, 1)),
-    
+    is_cancel NUMBER(1) DEFAULT 0 CHECK (is_cancel IN (0, 1)),  
     payment_status VARCHAR2(20) DEFAULT 'UNPAID'
         CHECK (payment_status IN ('UNPAID',
          'PENDING', 'PAID', 'FAILED', 'REFUNDED')),
-    
     created_at DATE DEFAULT SYSDATE,
+    update_at DATE DEFAULT SYSDATE,
     delete_flg NUMBER(1) DEFAULT 0 CHECK (delete_flg IN (0,1))
 );
 
@@ -96,8 +91,11 @@ CREATE TABLE bkap_booking (
 CREATE TABLE bkap_booking_room (
     booking_id NUMBER REFERENCES bkap_booking(id),
     room_id NUMBER REFERENCES bkap_room(id),
-    price NUMBER(12, 2) NOT NULL,
+    check_in_date DATE NOT NULL,
+    check_out_date DATE NOT NULL,
+    price NUMBER(12, 2) NOT NULL,   
     created_at DATE DEFAULT SYSDATE,
+    update_at DATE DEFAULT SYSDATE,
     delete_flg NUMBER(1) DEFAULT 0 CHECK (delete_flg IN (0,1)),
     PRIMARY KEY (booking_id, room_id)
 );

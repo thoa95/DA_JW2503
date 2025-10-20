@@ -65,17 +65,17 @@ public class HotelController {
 	}
 	
 //	@GetMapping("/{id}/empty-room")
-//    public String kiemTraPhongTrong(@PathVariable Integer id,
-//                                   @RequestParam("ngayDen") String ngayDenStr,
-//                                   @RequestParam("ngayTra") String ngayTraStr,
+//    public String getEmptyRoomInHotel(@PathVariable Long id,
+//                                   @RequestParam("checkIn") String checkIn,
+//                                   @RequestParam("checkOut") String checkOut,
 //                                   Model model) {
 //        try {
-//            LocalDate ngayDen = LocalDate.parse(ngayDenStr);
-//            LocalDate ngayTra = LocalDate.parse(ngayTraStr);
+//            LocalDate checkInDate = LocalDate.parse(checkIn);
+//            LocalDate checkOutDate = LocalDate.parse(checkOut);
 //            
 //            List<HotelDTO> hotelList = hotelService.getAllAsDTO(id);
 //            if (hotelList.size() > 0) {
-//                List<Phong> phongTrong = roomService.findAvailableRooms(id, ngayDen, ngayTra);
+//                List<Room> emptyRoomList = roomService.findAvailableRooms(id, checkInDate, checkOutDate);
 //                
 //                model.addAttribute("khachSan", khachSan.get());
 //                model.addAttribute("danhSachPhong", phongTrong);

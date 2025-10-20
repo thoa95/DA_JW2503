@@ -1,0 +1,17 @@
+1. TẠO BOOKING
+ - created_at
+ - paymment_status = 'UNPAID'
+ - is_cancel = 0
+ 
+2. Khi cancel room
+ - Chỉ được hủy trước giờ checkin tối thiểu 24h
+ - khi hủy phòng update bảng booking với is_cancel = 1;
+ - update bảng trung gian booking_room với delete_flg = 1
+ 
+3. Check phòng trống
+
+- phòng không có trong bảng trung gian booking_room HOẶC có nhưng delete_flg = 1
+- Điều kiện JOIN với bảng booking : 
++ is cancel = 1 hoặc delete_flg = 1 
++ hoặc (payment_status = Failed OR refunded)
++ hoặc (payment_status = 'UNPAID' AND update_at > now() = 20 minute)

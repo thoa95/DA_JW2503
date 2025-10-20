@@ -1,7 +1,6 @@
 package com.bkap.qlks.repository;
 
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -29,5 +28,4 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
             "LEFT JOIN TypeHotel t ON h.typeHotelId = t.id")
 		List<HotelDTO> findAllByCity();
 	
-//	Hotel findById(Integer id);
 }

@@ -4,7 +4,138 @@
 
 <head>
     <title th:text="${hotel.name} + ' - Chi tiết Khách sạn'">Chi tiết Khách sạn</title>
-    
+    <style>
+        /* style button */
+        .action-btn {
+            font-size: 0.85rem;
+            /* Nhỏ hơn mặc định một chút */
+            padding: 5px 12px;
+            /* Gọn gàng, không thô */
+            border-radius: 20px;
+            /* Bo tròn mềm mại */
+            transition: all 0.25s ease;
+        }
+
+        .action-btn i {
+            font-size: 0.8rem;
+        }
+
+        /* 🔸 Hover cho nút Xem */
+        .view-detail-btn {
+            background-color: #16a34a;
+            /* Xanh lá đậm */
+            border-color: #16a34a;
+        }
+
+        .view-detail-btn:hover {
+            background-color: #facc15;
+            /* Vàng nhẹ khi hover */
+            border-color: #eab308;
+            color: #fff;
+            transform: scale(1.05);
+            box-shadow: 0 0 6px rgba(234, 179, 8, 0.5);
+        }
+
+        /* 🔹 Hover cho nút Thêm */
+        .btn-primary.action-btn:hover {
+            background-color: #2563eb;
+            /* Xanh dương sáng hơn */
+            transform: scale(1.05);
+        }
+
+        .btn-secondary.action-btn {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+
+        /* style amenity */
+        .amenity-item {
+            display: flex;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 6px 12px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.25s ease;
+        }
+
+        .amenity-item:hover {
+            background: #e0f2fe;
+            /* xanh nhạt */
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+        }
+
+        .amenity-icon {
+            color: #22c55e;
+            /* xanh lá */
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+
+        /* style price */
+        .room-info {
+            line-height: 1.5;
+        }
+
+        .room-name {
+            color: #1e3a8a;
+            /* Xanh navy đậm */
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .room-name:hover {
+            color: #f59e0b;
+            /* Vàng nhẹ khi hover */
+            transform: translateX(3px);
+        }
+
+        .room-area {
+            color: #64748b;
+            /* Xám trung tính */
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .room-price {
+            margin-top: 8px;
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+        }
+
+        .price-box {
+            background: #ecfdf5;
+            /* Xanh lá nhạt */
+            border: 1px solid #bbf7d0;
+            /* Viền xanh pastel */
+            border-radius: 10px;
+            padding: 4px 12px;
+            display: inline-block;
+            font-weight: 700;
+            color: #15803d;
+            /* Xanh lá đậm */
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .price-box:hover {
+            background: #bbf7d0;
+            transform: scale(1.05);
+        }
+
+        .price-unit {
+            color: #475569;
+            /* Xám đậm */
+            font-size: 0.9rem;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -33,17 +164,6 @@
                             <div class="card-body">
                                 <p class="card-text">Một trong những khu vực đẹp nhất ở <span
                                         th:text="${hotel.cityName}">thành phố</span></p>
-                            </div>
-                        </div>
-                        <!-- Đánh giá -->
-                        <div class="card">
-                            <div class="card-body text-center">
-                                <div class="rating-stars fs-2" th:text="${hotel.evaluate} + ' ★'">5 ★</div>
-                                <p class="fw-bold text-primary mb-0" th:text="${hotel.evaluate == 0 ? 'Bình thường' : 
-                                       hotel.evaluate == 1 ? 'Khá ổn' :
-                                       hotel.evaluate == 2 ? 'Chất lượng' :
-                                       hotel.evaluate == 3 ? 'Sang trọng' :
-                                       hotel.evaluate == 4 ? 'Tuyệt vời' : 'Xuất sắc'}">Xuất sắc</p>
                             </div>
                         </div>
                     </div>
@@ -103,6 +223,7 @@
                         </div>
                     </div>
 
+                    <!-- Danh sách phòng -->
                     <!-- Phòng trống -->
                     <div id="room-list" class="container py-3">
                         <h3 class="mb-4 text-left">
@@ -152,7 +273,7 @@
                         <div class="card shadow-sm border-0" style="border-radius: 16px;">
                             <div class="card-body p-0">
                                 <table class="table table-hover align-middle mb-0">
-                                    <thead class="table-primary text-center">
+                                    <thead class="table-primary text-start">
                                         <tr>
                                             <th style="width: 15%;">Số giường</th>
                                             <th style="width: 30%;">Loại phòng</th>
@@ -169,22 +290,33 @@
                                             </td>
 
                                             <td class="py-3">
-                                                <h6 class="text-primary fw-bold mb-1" th:text="${room.name}">Tên phòng
-                                                </h6>
-                                                <p class="mb-1 text-muted"><span th:text="${room.area}">0</span> m²</p>
-                                                <p class="fw-semibold text-success mb-0">
-                                                    <span
-                                                        th:text="${#numbers.formatInteger(room.price, 0, 'COMMA')}"></span>,000
-                                                    VND/đêm
-                                                </p>
+                                                <div class="room-info">
+                                                    <!-- 🔹 Tên phòng -->
+                                                    <h5 class="room-name" th:text="${room.name}">Tên phòng</h5>
+
+                                                    <!-- 🔹 Diện tích -->
+                                                    <p class="room-area mb-2">
+                                                        <i class="fas fa-ruler-combined me-1 text-secondary"></i>
+                                                        <span th:text="${room.area}">0</span> m²
+                                                    </p>
+
+                                                    <!-- 🔹 Giá phòng -->
+                                                    <p class="room-price mb-0">
+                                                        <span class="price-box">
+                                                            <span class="price-value"
+                                                                th:text="${#numbers.formatInteger(room.price, 0, 'COMMA')}"></span>,000
+                                                        </span>
+                                                        <span class="price-unit">VND/đêm</span>
+                                                    </p>
+                                                </div>
                                             </td>
 
+
                                             <td class="text-start py-3">
-                                                <div class="text-muted">
+                                                <div class="room-amenities">
                                                     <div th:if="${room.amenities != null and !room.amenities.empty}"
-                                                        th:each="am : ${room.amenities}"
-                                                        class="mb-1 d-flex align-items-center">
-                                                        <i class="fas fa-check text-success me-2"></i>
+                                                        th:each="am : ${room.amenities}" class="amenity-item">
+                                                        <i class="fas fa-leaf amenity-icon"></i>
                                                         <span th:text="${am.name}"></span>
                                                     </div>
 
@@ -196,13 +328,22 @@
                                             </td>
 
                                             <td class="text-center py-3">
-                                                <button class="btn rounded-pill px-3"
-                                                    th:classappend="${daKiemTraroomTrong ?: false} ? 'btn-primary' : 'btn-secondary'"
-                                                    th:data-room-id="${room.id}"
-                                                    th:disabled="${!(daKiemTraroomTrong ?: false)}"
-                                                    onclick="bookRoom(this)">
-                                                    <i class="fas fa-calendar-plus me-1"></i>Đặt Phòng
-                                                </button>
+                                                <div class="d-flex justify-content-center gap-2">
+                                                    <!-- 🔹 Nút Xem chi tiết -->
+                                                    <button class="btn btn-success btn-sm action-btn view-detail-btn"
+                                                        th:data-room-id="${room.id}" onclick="viewRoomDetail(this)">
+                                                        <i class="fas fa-eye me-1"></i> Xem
+                                                    </button>
+
+                                                    <!-- 🔹 Nút Thêm -->
+                                                    <button class="btn btn-sm action-btn"
+                                                        th:classappend="${daKiemTraroomTrong ?: false} ? 'btn-primary' : 'btn-secondary'"
+                                                        th:data-room-id="${room.id}"
+                                                        th:disabled="${!(daKiemTraroomTrong ?: false)}"
+                                                        onclick="bookRoom(this)">
+                                                        <i class="fas fa-plus me-1"></i> Thêm
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     </tbody>

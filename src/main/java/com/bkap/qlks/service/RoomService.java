@@ -16,4 +16,6 @@ public class RoomService {
 	public List<Room> getRoomsByHotelId(Long hotelID) {
 		return roomRepository.findByHotelId(hotelID);
 	}
+	
+	
 }
