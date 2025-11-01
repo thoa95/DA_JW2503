@@ -1,6 +1,7 @@
 package com.bkap.qlks.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.bkap.qlks.common.Const;
 import com.bkap.qlks.dto.HotelDTO;
 import com.bkap.qlks.entity.City;
 import com.bkap.qlks.entity.Room;
@@ -19,9 +21,7 @@ import com.bkap.qlks.service.HotelService;
 import com.bkap.qlks.service.RoomService;
 import com.bkap.qlks.service.TypeHotelService;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/hotel")
@@ -52,46 +52,43 @@ public class HotelController {
 	}
 
 	@GetMapping("/{id}")
-	public String getDetailHotel(@PathVariable Long id, Model model) {
+	public String getDetailHotel(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, Model model) {
 		List<HotelDTO> hotelList = hotelService.getAllAsDTO(id);
 		if (hotelList.size() > 0) {
-			List<Room> roomList = roomService.getRoomsByHotelId(id);
+			Page<Room> roomPage = roomService.getRoomsByHotelId(id, page, Const.size);
 			model.addAttribute("hotel", hotelList.get(0));
-			model.addAttribute("roomList", roomList);
-			System.out.println(roomList.get(0));
-			return "chi-tiet-khach-san";
+			model.addAttribute("roomPage", roomPage);
+			model.addAttribute("roomList", roomPage.getContent());
+			return "chi-tiet-khach-san2";
 		}
-		return "redirect:/khach-san";
+		return "redirect:/hotel";
 	}
-	
-//	@GetMapping("/{id}/empty-room")
-//    public String getEmptyRoomInHotel(@PathVariable Long id,
-//                                   @RequestParam("checkIn") String checkIn,
-//                                   @RequestParam("checkOut") String checkOut,
-//                                   Model model) {
-//        try {
-//            LocalDate checkInDate = LocalDate.parse(checkIn);
-//            LocalDate checkOutDate = LocalDate.parse(checkOut);
-//            
-//            List<HotelDTO> hotelList = hotelService.getAllAsDTO(id);
-//            if (hotelList.size() > 0) {
-//                List<Room> emptyRoomList = roomService.findAvailableRooms(id, checkInDate, checkOutDate);
-//                
-//                model.addAttribute("khachSan", khachSan.get());
-//                model.addAttribute("danhSachPhong", phongTrong);
-//                model.addAttribute("ngayDen", ngayDen);
-//                model.addAttribute("ngayTra", ngayTra);
-//                model.addAttribute("daKiemTraPhongTrong", true);
-//                
-//                return "chi-tiet-khach-san";
-//            }
-//        } catch (Exception e) {
-//            model.addAttribute("error", "Ngày nhập vào không hợp lệ!");
-//        }
-//        
-//        return "redirect:/khach-san/" + id;
-//    }
-	
+
+	@GetMapping("/{id}/empty-room")
+	public String getEmptyRoomInHotel(@PathVariable Long id,
+									@RequestParam String fromDate,
+									@RequestParam String toDate,
+									@RequestParam(defaultValue = "0") int page,
+									Model model) {
+		try {
+				
+			List<HotelDTO> hotelList = hotelService.getAllAsDTO(id);
+			if (hotelList.size() > 0) {
+				Page<Room> roomPage = roomService.findAvailableRooms(id, fromDate, toDate, page, Const.size);
+				model.addAttribute("hotel", hotelList.get(0));
+				model.addAttribute("roomPage", roomPage);
+				model.addAttribute("roomList", roomPage.getContent());
+				model.addAttribute("fromDate", fromDate);
+				model.addAttribute("toDate", toDate);
+				model.addAttribute("checkedRooms", true);
+				return "chi-tiet-khach-san2";
+			}
+		} catch (Exception e) {
+			model.addAttribute("error", "Ngày nhập vào không hợp lệ!");
+		}
+
+		return "redirect:/hotel/" + id;
+	}
 
 	@GetMapping("/filter")
 	@ResponseBody
