@@ -62,7 +62,8 @@ public class CartController {
 		return ResponseEntity.ok(Map.of("message", "Đã thêm phòng vào giỏ!", "cartCount", cart.size()));
 	}
 
-	//update checkin,checkout
+
+
 	@PostMapping("/update")
 	public String updateCartItem(@RequestParam Long roomId, @RequestParam String fromDate, @RequestParam String toDate,
 			HttpSession session, RedirectAttributes redirectAttributes) {
@@ -115,6 +116,8 @@ public class CartController {
 		return "redirect:/cart";
 	}
 
+	
+	
 	@GetMapping("/count")
 	@ResponseBody
 	public ResponseEntity<Integer> getCartCount(HttpSession session) {
@@ -124,6 +127,8 @@ public class CartController {
 		return ResponseEntity.ok(count);
 	}
 
+	
+	
 	// Xóa 1 phòng
 	@GetMapping("/remove/{id}")
 	public String removeItem(@PathVariable("id") Long roomId, HttpSession session,
@@ -141,6 +146,8 @@ public class CartController {
 		return "redirect:/cart";
 	}
 
+	
+	
 	// Xóa toàn bộ giỏ hàng
 	@GetMapping("/clear")
 	public String clearCart(HttpSession session, RedirectAttributes redirectAttributes) {

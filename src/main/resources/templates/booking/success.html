@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Thanh toán thành công</title>
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+			padding: 50px;
+			background-color: #f0f8ff;
+		}
+
+		.container {
+			border: 2px solid #4CAF50;
+			padding: 30px;
+			border-radius: 10px;
+			display: inline-block;
+			background-color: #e6ffee;
+		}
+
+		h1 {
+			color: #4CAF50;
+		}
+
+		p {
+			font-size: 18px;
+		}
+
+		.amount {
+			font-weight: bold;
+			font-size: 20px;
+			color: #333;
+		}
+
+		a {
+			display: inline-block;
+			margin-top: 20px;
+			text-decoration: none;
+			color: white;
+			background-color: #4CAF50;
+			padding: 10px 20px;
+			border-radius: 5px;
+		}
+
+		a:hover {
+			background-color: #45a049;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container">
+		<h1>🎉 Thanh toán thành công!</h1>
+		<p th:text="${message}">Thanh toán thành công cho đơn …</p>
+		<!--<p>Số tiền: <span class="amount" th:text="${#numbers.formatDecimal(amount / 100, 0, 'COMMA')} + ' VND'">0
+				VND</span></p>
+		<a th:href="@{/}">Quay về trang chủ</a>-->
+	</div>
+</body>
+
+</html>
