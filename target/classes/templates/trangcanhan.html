@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main}">
+<head>
+
+<!-- Website Title -->
+<title>Log In || Hotel Booking</title>
+
+
+</head>
+<body data-spy="scroll" data-target=".fixed-top">
+
+
+
+	<div layout:fragment="content" class="container py-5">
+		<div class="row">
+
+			<div class="col-md-4">
+				<div class="card shadow-sm border-0">
+					<div class="card-body text-center">
+						<img src="https://cdn-icons-png.flaticon.com/512/219/219970.png"
+							alt="avatar" class="rounded-circle mb-3" width="130" height="130">
+						<h4 th:text="${account.full_name}">Nguyễn Văn A</h4>
+						<p class="text-muted mb-1" th:text="${account.email}">nguyenvana@example.com</p>
+						<p class="text-muted" th:text="${account.phone}">0123 456 789</p>
+
+
+						<hr>
+						<div class="d-grid gap-2">
+							<a th:href="@{/edit-profile}" class="btn btn-outline-primary btn-sm">Chỉnh
+								sửa thông tin</a> <a th:href="@{/change-password}"
+								class="btn btn-outline-secondary btn-sm">Đổi mật khẩu</a>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-8">
+				<div class="card shadow-sm border-0">
+					<div class="card-body">
+						<h5 class="mb-3">Bài viết của bạn</h5>
+
+						<div th:if="${#lists.isEmpty(account.news)}"
+							class="text-center text-muted">
+							<p>Bạn chưa đăng bài viết nào.</p>
+							<a th:href="@{/createblogger}" class="btn btn-primary btn-sm">Đăng bài
+								mới</a>
+						</div>
+
+						<div th:each="n : ${account.news}">
+							<div class="card mb-3 border-0 border-bottom pb-2">
+								<div class="card-body p-2">
+									<h6>
+										<a th:href="@{/blog/{id}(id=${n.news_id})}"
+											class="text-decoration-none" th:text="${n.title}">Tiêu đề
+											bài viết</a>
+									</h6>
+									<small class="text-muted"> <i class="fa fa-clock"></i>
+										<span th:text="${#temporals.format(n.createdat, 'dd/MM/yyyy HH:mm')}"></span>
+
+									</small>
+									<p class="mt-2 text-secondary"
+										th:text="${#strings.abbreviate(n.content, 100)}">Mô tả
+										ngắn bài viết...</p>
+
+									<div>
+										<a th:href="@{/deleteblog/{id}(id=${n.news_id})}"
+											onclick="return confirm('Bạn có chắc muốn xóa bài này không?')"
+											class="btn btn-sm btn-outline-danger">Xóa</a>
+									</div>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+
+
+</body>
+</html>
