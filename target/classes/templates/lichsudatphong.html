@@ -1,70 +1,53 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/main}">
-<head>
+<html xmlns:th="http://www.thymeleaf.org" 
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/main}">
 
-    <!-- Website Title -->
-    <title>Log In || Hotel Booking</title>
-    
-   
+<head>
+    <title>Lịch sử đặt phòng || Hotel Booking</title>
 </head>
+
 <body data-spy="scroll" data-target=".fixed-top">
-    
- 
+
 <div layout:fragment="content">
     <div class="container py-5">
-        <h2 class="mb-4 text-center fw-bold">🕒 Lịch sử đặt phòng</h2>
+        <h2 class="mb-4 text-center fw-bold">Lịch sử đặt phòng</h2>
 
-       <div th:if="${bookings == null or #lists.isEmpty(bookings)}" class="alert alert-info text-center">
-
+        <!-- Nếu không có đơn -->
+        <div th:if="${#lists.isEmpty(bookings)}" class="alert alert-info text-center">
             Bạn chưa có đơn đặt phòng nào.
         </div>
 
-        <div th:if="${bookings != null and !#lists.isEmpty(bookings)}" class="table-responsive">
-
+        <!-- Nếu có đơn -->
+        <div th:if="${!#lists.isEmpty(bookings)}" class="table-responsive">
             <table class="table table-hover align-middle shadow-sm">
                 <thead class="table-primary">
-                <tr>
-                    <th>#</th>
-                    <th>Tên phòng</th>
-                    <th>Ngày nhận</th>
-                    <th>Ngày trả</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th>Thao tác</th>
+                    <tr>
+                        <th>#</th>
+                        <th>Mã đặt phòng</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái thanh toán</th>
+                        <th>Tình trạng</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr th:each="b, iStat : ${bookings}">
-                    <td th:text="${iStat.index + 1}"></td>
-                    <td th:text="${b.roomName}"></td>
-                    <td th:text="${#dates.format(b.checkInDate, 'dd/MM/yyyy')}"></td>
-                    <td th:text="${#dates.format(b.checkOutDate, 'dd/MM/yyyy')}"></td>
-                    <td th:text="${#numbers.formatDecimal(b.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
-                    <td>
-                        <span th:classappend="${b.status == 'Đã xác nhận'} ? 'badge bg-success' :
-                                              ${b.status == 'Đang xử lý'} ? 'badge bg-warning' :
-                                              ${b.status == 'Đã hủy'} ? 'badge bg-danger' : 'badge bg-secondary'"
-                              th:text="${b.status}">
-                        </span>
-                    </td>
-                    <td>
-                        <a th:href="@{'/booking/detail/' + ${b.bookingId}}" class="btn btn-sm btn-outline-primary me-2">
-                            <i class="fa fa-eye"></i> Xem chi tiết
-                        </a>
-                        <a th:if="${b.status != 'Đã hủy' and b.status != 'Đã nhận phòng'}"
-                           th:href="@{'/booking/cancel/' + ${b.bookingId}}"
-                           class="btn btn-sm btn-outline-danger"
-                           onclick="return confirm('Bạn có chắc chắn muốn hủy đặt phòng này không?')">
-                            <i class="fa fa-times"></i> Hủy
-                        </a>
-                    </td>
-                </tr>
+                    <tr th:each="b, iStat : ${bookings}">
+                        <td th:text="${iStat.index + 1}"></td>
+                        <td th:text="${b.id}"></td>
+                        <td th:text="${#dates.format(b.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                        <td th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
+                        <td th:text="${b.paymentStatus}"></td>
+                        <td>
+                            <span th:classappend="${b.isCancel == 1} ? 'badge bg-danger' : 'badge bg-success'"
+                                  th:text="${b.isCancel == 1 ? 'Đã hủy' : 'Hoạt động'}"></span>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-
 
 </body>
 </html>
