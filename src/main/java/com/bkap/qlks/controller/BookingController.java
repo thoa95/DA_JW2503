@@ -39,7 +39,7 @@ public class BookingController {
         return "redirect:/booking/confirm";
     }
 	
-	@PostMapping("/confirm")
+	@GetMapping("/confirm")
 	public String confirmBooking(HttpSession session, RedirectAttributes redirectAttributes) {
 	    Account account = (Account) session.getAttribute("account");
 	    if (account == null) {
