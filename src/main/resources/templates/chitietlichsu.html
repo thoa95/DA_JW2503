@@ -4,7 +4,7 @@
       layout:decorate="~{layout/main}">
 
 <head>
-    <title>Lịch sử đặt phòng || Hotel Booking</title>
+    <title>Chi tiết lịch sử || Hotel Booking</title>
 </head>
 
 <body data-spy="scroll" data-target=".fixed-top">
@@ -44,7 +44,7 @@
                             <span th:classappend="${b.isCancel == 1} ? 'badge bg-danger' : 'badge bg-success'"
                                   th:text="${b.isCancel == 1 ? 'Đã hủy' : 'Hoạt động'}"></span>
                         </td>
-                        <td><a th:href="@{/chitietls}">Chi tiết</a></td>
+                        <td><a th:href="@{/huydatphong}">Hủy phòng</a></td>
                     </tr>
                 </tbody>
             </table>

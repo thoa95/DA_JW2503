@@ -29,6 +29,8 @@
                         <th>Tổng tiền</th>
                         <th>Trạng thái thanh toán</th>
                         <th>Tình trạng</th>
+                        <th>Thông tin</th>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -42,6 +44,7 @@
                             <span th:classappend="${b.isCancel == 1} ? 'badge bg-danger' : 'badge bg-success'"
                                   th:text="${b.isCancel == 1 ? 'Đã hủy' : 'Hoạt động'}"></span>
                         </td>
+                        <td><a th:href="@{/chitietls}">Chi tiết</a></td>
                     </tr>
                 </tbody>
             </table>

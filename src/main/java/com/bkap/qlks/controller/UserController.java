@@ -102,13 +102,7 @@ public class UserController {
 	            return "change-password";
 	        }
 
-	        // Kiểm tra độ dài mật khẩu
-	        if (newPassword.length() < 6) {
-	            model.addAttribute("error", "Mật khẩu mới phải có ít nhất 6 ký tự.");
-	            return "change-password";
-	        }
-
-	        // Cập nhật mật khẩu mới
+	   
 	        account.setPassword(passEncoder.encode(newPassword));
 	        userRepository.save(account);
 
@@ -153,4 +147,12 @@ public class UserController {
 
         return "redirect:/tcn?success=updated";
     }
+    @GetMapping("/chitietls")
+    public String chitietlsu() {
+    	return "chitietlichsu";
+    }
+    @GetMapping("/huydatphong")
+    public String huydatp() {
+    	return "redirect:/chitietls";
+    } 
 }

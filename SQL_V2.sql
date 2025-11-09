@@ -1,5 +1,6 @@
-thông tin user-sửa thông tin
-lịch sử đặt phòng-trong đó có thông tin và hủy đặt phòng
+Chi tiết đặt phòng, 
+hủy đặt, 
+news
 
 Drop table bkap_account;
 drop table bkap_room;dec
