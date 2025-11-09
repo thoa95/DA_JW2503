@@ -23,12 +23,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bkap.qlks.common.Const;
 import com.bkap.qlks.config.VNPAYConfig;
-import com.bkap.qlks.dto.PaymentDTO;
 import com.bkap.qlks.entity.Booking;
 import com.bkap.qlks.service.BookingService;
 import com.bkap.qlks.service.PaymentService;
@@ -72,7 +70,8 @@ public class PaymentController {
 		}
 
 		if (Const.VNPAY_METHOD.equalsIgnoreCase(method)) {
-			return "redirect:/payment/vnpay/start";
+//			return "redirect:/payment/vnpay/start";
+			return "redirect:/payment/create";
 		} else if (Const.CASH_METHOD.equalsIgnoreCase(method)) {
 			paymentService.savePaymentStatus(bookingId, Const.CASH_METHOD);
 			redirectAttributes.addFlashAttribute("success", "Đặt phòng thành công! Thanh toán bằng tiền mặt.");
@@ -100,21 +99,27 @@ public class PaymentController {
 	}
 
 	@GetMapping("/create")
-	@ResponseBody
-	public ResponseEntity<?> createPayment(HttpServletRequest req, HttpSession session)
+	public String createPayment(HttpServletRequest req, HttpSession session, RedirectAttributes redirectAttributes)
 			throws UnsupportedEncodingException {
 		String vnp_TmnCode = VNPAYConfig.vnp_TmnCode;
 
-//		Long bookingId = (Long) session.getAttribute("bookingId");
-//	    if (bookingId == null) {
-//	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Không tìm thấy bookingId");
-//	    }
+//		String vnp_TxnRef = VNPAYConfig.getRandomNumber(8);
+//		long amount = 1000000 * 100; // 1.000.000 VND
 
-		String vnp_TxnRef = VNPAYConfig.getRandomNumber(8);
-		;
-//		String vnp_TxnRef = String.valueOf(bookingId);
-		long amount = 1000000 * 100; // 1.000.000 VND
-		
+		Long bookingId = (Long) session.getAttribute("bookingId");
+		if (bookingId == null) {
+			redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn đặt phòng!");
+			return "redirect:/";
+		}
+
+		Booking booking = bookingService.getBookingById(bookingId);
+		if (booking == null) {
+			redirectAttributes.addFlashAttribute("error", "Booking không tồn tại!");
+			return "redirect:/";
+		}
+
+		String vnp_TxnRef = String.valueOf(bookingId); // dùng bookingId làm TxnRef
+		long amount = booking.getTotalAmount() * 100;
 
 		Map<String, String> vnp_Params = new HashMap<>();
 		vnp_Params.put("vnp_Version", VNPAYConfig.vnp_Version);
@@ -162,59 +167,45 @@ public class PaymentController {
 		String queryUrl = query.toString() + "&vnp_SecureHash=" + vnp_SecureHash;
 		String paymentUrl = VNPAYConfig.vnp_PayUrl + "?" + queryUrl;
 
-		PaymentDTO paymentDTO = new PaymentDTO();
-		paymentDTO.setStatus("Ok");
-		paymentDTO.setMessage("Success");
-		paymentDTO.setURL(paymentUrl);
-		return ResponseEntity.status(HttpStatus.OK).body(paymentDTO);
+//		PaymentDTO paymentDTO = new PaymentDTO();
+//		paymentDTO.setStatus("Ok");
+//		paymentDTO.setMessage("Success");
+//		paymentDTO.setURL(paymentUrl);
+//		return ResponseEntity.status(HttpStatus.OK).body(paymentDTO);
+
+		return "redirect:" + paymentUrl;
 	}
 
-//	@GetMapping("/info")
-//	@ResponseBody
-//	public ResponseEntity<?> transaction(
-//			@RequestParam(value = "vnp_Amount", required = false) String amount, 
-//			@RequestParam(value = "vnp_BankCode", required = false) String bankCode, 
-//			@RequestParam(value = "vnp_OrderInfo", required = false) String order, 
-//			@RequestParam(value = "vnp_ResponseCode", required = false) String responseCode,
-//			@RequestParam(value = "vnp_TxnRef", required = false) String vnp_TxnRef
-//	) {
-//		if ("00".equals(responseCode)) {
-//	        Long bookingId = Long.valueOf(vnp_TxnRef);
-////	        paymentService.savePaymentStatus(bookingId, Const.VNPAY_METHOD);
-//
-//	        return ResponseEntity.ok("Thanh toán thành công cho đơn " + bookingId + 
-//	            ", số tiền: " + amount);
-//	    } else {
-//	        return ResponseEntity.ok("Thanh toán thất bại. Mã lỗi: " + responseCode);
-//	    }
-//	}
 
 	@GetMapping("/info")
 	public String transactionRedirect(@RequestParam(value = "vnp_Amount", required = false) String amount,
 			@RequestParam(value = "vnp_BankCode", required = false) String bankCode,
 			@RequestParam(value = "vnp_OrderInfo", required = false) String order,
 			@RequestParam(value = "vnp_ResponseCode", required = false) String responseCode,
-			@RequestParam(value = "vnp_TxnRef", required = false) String vnp_TxnRef,
+			@RequestParam(value = "vnp_TxnRef", required = false) String bookingCode,
 			RedirectAttributes redirectAttributes) {
 		if ("00".equals(responseCode)) {
 			// Thanh toán thành công
-			Long bookingId = Long.valueOf(vnp_TxnRef);
-			// paymentService.savePaymentStatus(bookingId, Const.VNPAY_METHOD); // nếu cần
+			Long bookingId = Long.valueOf(bookingCode);
+			
 			// lưu DB
+			 paymentService.savePaymentStatus(bookingId, Const.VNPAY_METHOD);
 
 			// Truyền dữ liệu sang view thành công
 			redirectAttributes.addFlashAttribute("status", "success");
-			redirectAttributes.addFlashAttribute("message", "Thanh toán thành công cho đơn " + bookingId);
-			redirectAttributes.addFlashAttribute("amount", amount);
+			redirectAttributes.addFlashAttribute("message", "Thanh toán thành công cho mã Booking: " + bookingId);
+			Integer amountLong = Integer.valueOf(amount);
+			redirectAttributes.addFlashAttribute("amount", amountLong);
 
-			return "redirect:/booking/success"; // trang success
+			return "redirect:/booking/success";
 		} else {
 			// Thanh toán thất bại
 			redirectAttributes.addFlashAttribute("status", "fail");
 			redirectAttributes.addFlashAttribute("message", "Thanh toán thất bại. Mã lỗi: " + responseCode);
-			redirectAttributes.addFlashAttribute("amount", amount);
+			Integer amountLong = Integer.valueOf(amount);
+			redirectAttributes.addFlashAttribute("amount", amountLong);
 
-			return "redirect:/booking/fail"; // trang fail
+			return "redirect:/booking/fail";
 		}
 	}
 

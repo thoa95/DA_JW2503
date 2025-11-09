@@ -54,9 +54,9 @@
 	<div class="container">
 		<h1>❌ Thanh toán thất bại!</h1>
 		<p th:text="${message}">Thanh toán thất bại</p>
-		<!--<p>Số tiền: <span class="amount" th:text="${#numbers.formatDecimal(amount / 100, 0, 'COMMA')} + ' VND'">0
-				VND</span></p>
-		<a th:href="@{/payment/start}">Thử lại</a>-->
+		<p>Số tiền: 
+			<span th:text="${#numbers.formatInteger(amount / 100, 0, 'COMMA')}"></span>
+		<a th:href="@{/payment/start}">Thử lại</a>
 	</div>
 </body>
 

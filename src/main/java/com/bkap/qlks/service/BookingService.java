@@ -68,6 +68,10 @@ public class BookingService {
 			br.setCheckInDate(checkIn);
 			br.setCheckOutDate(checkOut);
 			br.setPrice(item.getPrice());
+			br.setAccountId(account.getAccountId());
+			br.setCreatedAt(new Date());
+			br.setUpdateAt(new Date());
+			br.setDeleteFlg(0);
 			bookingRoomList.add(br);
 
 		}

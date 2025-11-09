@@ -39,7 +39,30 @@ public class BookingController {
         return "redirect:/booking/confirm";
     }
 	
+	
+	
 	@GetMapping("/confirm")
+	public String confirmBooking(HttpSession session, RedirectAttributes redirectAttributes, Model model) {
+	    Account account = (Account) session.getAttribute("account");
+	    if (account == null) {
+	        redirectAttributes.addFlashAttribute("error", "Phiên đăng nhập đã hết hạn!");
+	        return "redirect:/login?pendingBooking=true";
+	    }
+
+	    List<CartItem> cartItems = cartService.getCart(session);
+	    if (cartItems == null || cartItems.isEmpty()) {
+	        redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống!");
+	        return "redirect:/cart";
+	    }
+
+   	    model.addAttribute("cartItems", cartItems);
+	    model.addAttribute("totalPrice", cartService.getTotalPrice(cartItems));
+	    return "booking/confirm"; // render trang Xác nhận đặt phòng
+	}
+	
+	
+	
+	@PostMapping("/confirm/save")
 	public String confirmBooking(HttpSession session, RedirectAttributes redirectAttributes) {
 	    Account account = (Account) session.getAttribute("account");
 	    if (account == null) {
@@ -52,13 +75,20 @@ public class BookingController {
 	        redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống!");
 	        return "redirect:/cart";
 	    }
-
+	    
+	    // save booking
 	    Booking booking = bookingService.createBooking(account, cartItems);
+	    
+	    //add attribute
 	    session.setAttribute("bookingId", booking.getId());
 	    cartService.clearCart(session);
 
 	    return "redirect:/payment/start";
 	}
+	
+	
+	
+	
 	
 	
 	   @GetMapping("/success")

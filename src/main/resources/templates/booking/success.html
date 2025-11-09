@@ -54,10 +54,13 @@
 	<div class="container">
 		<h1>🎉 Thanh toán thành công!</h1>
 		<p th:text="${message}">Thanh toán thành công cho đơn …</p>
-		<!--<p>Số tiền: <span class="amount" th:text="${#numbers.formatDecimal(amount / 100, 0, 'COMMA')} + ' VND'">0
-				VND</span></p>
-		<a th:href="@{/}">Quay về trang chủ</a>-->
+		<p>Số tiền:
+			<span th:text="${#numbers.formatInteger(amount / 100, 0, 'COMMA')  + ' VND'}"></span>
+		<div>
+			<a th:href="@{/}">Quay về trang chủ</a>
+		</div>
 	</div>
+
 </body>
 
 </html>

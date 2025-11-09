@@ -6,148 +6,36 @@
 	<head>
 	    <title>Trang chủ - Quản Lý Khách Sạn</title>
 	</head>
-	
-	<style>
-	  #hero {
-	    height: 90vh;
-	    position: relative;
-	  }
-
-	  .hero-img {
-	    object-fit: cover;
-	    height: 90vh;
-	  }
-
-	  .overlay {
-	    z-index: 1;
-	  }
-
-	  #hero .container {
-	    z-index: 2;
-	  }
-
-	  .booking-box {
-	    background-color: rgba(255, 255, 255, 0.95);
-	  }
-
-	  @media (max-width: 767px) {
-	    #hero {
-	      height: auto;
-	    }
-
-	    .hero-img {
-	      height: 60vh;
-	    }
-
-	    .booking-box {
-	      margin-top: 2rem;
-	    }
-	  }
-	</style>
-
-
-	<!-- Bootstrap Icons -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
-	<!-- Flatpickr -->
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-	<!-- JS: Date Picker -->
-	<script>
-	    document.addEventListener("DOMContentLoaded", function() {
-	        const today = new Date().toISOString().split("T")[0]; // yyyy-MM-dd
-	        const checkin = document.getElementById("checkin");
-	        const checkout = document.getElementById("checkout");
-
-	        // Không cho chọn ngày trước hôm nay
-	        checkin.min = today;
-	        checkout.min = today;
-
-	        // Nếu chọn checkin -> thì checkout phải >= checkin
-	        checkin.addEventListener("change", function() {
-	            checkout.min = checkin.value;
-	        });
-	    });
-	</script>
-	
 </head>
 <body>
     <main layout:fragment="content">
         <!-- Hero Section -->
 		<!--<section>-->
-			<section id="hero" class="position-relative overflow-hidden">
+		    <div class="container">
+		        <div class="search-box">
+		            <form th:action="@{/tim-kiem}" method="post" class="row g-2">
+		                
+		                <!-- Nhập thành phố -->
+		                <div class="col">
+		                    <input type="text" class="form-control form-control-lg custom-input" id="tenThanhPho"
+		                           name="tenThanhPho" placeholder="Nhập thành phố" required>
+		                </div>
 
-			  <!-- 🔹 Slider ảnh nền -->
-			  <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
-			    <div class="carousel-inner">
-			      <div class="carousel-item active">
-			        <img src="/images/navbar/nav1.jpg" class="d-block w-100 hero-img" alt="Hotel view">
-			      </div>
-			      <div class="carousel-item">
-			        <img src="/images/navbar/nav2.jpg" class="d-block w-100 hero-img" alt="Luxury hotel">
-			      </div>
-			      <div class="carousel-item">
-			        <img src="/images/navbar/nav3.jpg" class="d-block w-100 hero-img" alt="Beach resort">
-			      </div>
-			    </div>
-			  </div>
+		                <!-- Ngày đến - Ngày trả -->
+		                <div class="col">
+		                    <input type="text" class="form-control form-control-lg custom-input"
+		                           placeholder="Ngày đến - Ngày trả">
+		                </div>
 
-			  <!-- 🔹 Lớp phủ mờ -->
-			  <div class="overlay position-absolute top-0 start-0 w-100 h-100 bg-dark opacity-50"></div>
-
-			  <!-- 🔹 Nội dung Hero -->
-			  <div class="container position-absolute top-50 start-50 translate-middle text-white">
-			    <div class="row align-items-center">
-			      <!-- Bên trái: tên & slogan -->
-			      <div class="col-md-6 mb-4 mb-md-0 text-center text-md-start">
-			        <h1 class="display-4 fw-bold mb-3">Khám phá khách sạn mơ ước của bạn</h1>
-			        <p class="lead">Tận hưởng kỳ nghỉ tuyệt vời với những ưu đãi đặc biệt dành riêng cho bạn.</p>
-			      </div>
-
-			      <!-- Bên phải: form booking -->
-			      <div class="col-md-5 offset-md-1">
-			        <div class="booking-box bg-white text-dark p-4 rounded-4 shadow-lg">
-			          <h3 class="text-center mb-4 fw-bold">Booking Your Hotel</h3>
-
-			          <form th:action="@{/tim-kiem}" method="post">
-			            <!-- Thành phố -->
-			            <div class="mb-3">
-			              <label class="form-label">Thành phố</label>
-			              <input type="text" name="tenThanhPho" class="form-control" placeholder="Nhập thành phố" required>
-			            </div>
-
-			            <!-- Check In -->
-			            <div class="mb-3">
-			              <label class="form-label">Check In</label>
-			              <input type="date" id="checkin" class="form-control" required>
-			            </div>
-
-			            <!-- Check Out -->
-			            <div class="mb-3">
-			              <label class="form-label">Check Out</label>
-			              <input type="date" id="checkout" class="form-control" required>
-			            </div>
-
-			            <!-- Guests -->
-			            <div class="mb-3">
-			              <label class="form-label">giường</label>
-			              <select class="form-select">
-			                <option>1 bed</option>
-			                <option selected>2 bed</option>
-			                <option>3 bed</option>
-			                <option>4 bed</option>
-			              </select>
-			            </div>
-						      
-			            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Check Availability</button>
-			          </form>
-			        </div>
-			      </div>
-			    </div>
-			  </div>
-			</section>
-
+		                <!-- Nút tìm -->
+		                <div class="col-auto">
+		                    <button type="submit" class="btn btn-primary btn-lg px-4">
+		                        Tìm
+		                    </button>
+		                </div>
+		            </form>
+		        </div>
+		    </div>
 		<!--</section>-->
         
         <!-- Thành phố nổi bật -->

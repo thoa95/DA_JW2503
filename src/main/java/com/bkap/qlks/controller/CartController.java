@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,32 +19,38 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bkap.qlks.dto.CartItem;
+import com.bkap.qlks.entity.Account;
+import com.bkap.qlks.service.CartService;
+
 import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/cart")
 public class CartController {
-	
+	@Autowired
+	CartService cartService;
+
 	@GetMapping
-	public String viewCart(HttpSession session, org.springframework.ui.Model model) {
-		@SuppressWarnings("unchecked")
-		List<CartItem> cartItems = (List<CartItem>) session.getAttribute("cartItems");
+	public String showCart(@RequestParam(value = "pendingBooking", required = false) Boolean pendingBooking,
+			HttpSession session, Model model) {
+
+		List<CartItem> cartItems = cartService.getCart(session);
 		model.addAttribute("cartItems", cartItems);
-		model.addAttribute("totalPrice", cartItems == null ? 0
-				: cartItems.stream().mapToLong(item -> (long) item.getPrice() * item.getNumberDay()).sum());
+		model.addAttribute("totalPrice", cartService.getTotalPrice(cartItems));
+
+		Account account = (Account) session.getAttribute("account");
+		model.addAttribute("account", account);
+
+		model.addAttribute("pendingBooking", pendingBooking != null && pendingBooking);
+
 		return "cart";
 	}
-	
 
 	@SuppressWarnings("unchecked")
 	@PostMapping("/add")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> addToCart(
-			@RequestParam Long roomId,
-			@RequestParam String roomName,
-			@RequestParam Integer price,
-			@RequestParam String fromDate,
-			@RequestParam String toDate,
+	public ResponseEntity<Map<String, Object>> addToCart(@RequestParam Long roomId, @RequestParam String roomName,
+			@RequestParam Integer price, @RequestParam String fromDate, @RequestParam String toDate,
 			HttpSession session) {
 
 		List<CartItem> cart = (List<CartItem>) session.getAttribute("cartItems");
@@ -57,12 +65,10 @@ public class CartController {
 
 		CartItem newItem = new CartItem(roomId, roomName, price, fromDate, toDate);
 		cart.add(newItem);
-		
+
 		session.setAttribute("cartItems", cart);
 		return ResponseEntity.ok(Map.of("message", "Đã thêm phòng vào giỏ!", "cartCount", cart.size()));
 	}
-
-
 
 	@PostMapping("/update")
 	public String updateCartItem(@RequestParam Long roomId, @RequestParam String fromDate, @RequestParam String toDate,
@@ -116,8 +122,6 @@ public class CartController {
 		return "redirect:/cart";
 	}
 
-	
-	
 	@GetMapping("/count")
 	@ResponseBody
 	public ResponseEntity<Integer> getCartCount(HttpSession session) {
@@ -127,8 +131,6 @@ public class CartController {
 		return ResponseEntity.ok(count);
 	}
 
-	
-	
 	// Xóa 1 phòng
 	@GetMapping("/remove/{id}")
 	public String removeItem(@PathVariable("id") Long roomId, HttpSession session,
@@ -146,8 +148,6 @@ public class CartController {
 		return "redirect:/cart";
 	}
 
-	
-	
 	// Xóa toàn bộ giỏ hàng
 	@GetMapping("/clear")
 	public String clearCart(HttpSession session, RedirectAttributes redirectAttributes) {

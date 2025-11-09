@@ -32,11 +32,15 @@ public class SercurityConfig {
 	}
 	
 	@Autowired
-    private CustomLoginSuccessHandler loginSuccessHandler;
+    CustomLoginSuccessHandler loginSuccessHandler;
 
 	@Bean
 	SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.csrf(csrf -> csrf.disable())
+		// ✅ Giữ nguyên session khi login, không mất pendingBooking
+        .sessionManagement(session -> session
+            .sessionFixation(sessionFixation -> sessionFixation.none())
+        )
 				.authorizeHttpRequests(
 						(auth) -> auth.requestMatchers("/admin/**").hasAuthority("ADMIN")
 						.requestMatchers("/**").permitAll()
@@ -49,14 +53,7 @@ public class SercurityConfig {
 						 .successHandler(loginSuccessHandler) // ✅ dùng custom handler
 			                .permitAll()
 						)
-				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login"))
-				.formLogin(login -> login.loginPage("/login")
-						.loginProcessingUrl("/login")
-						.usernameParameter("accountId")
-						.passwordParameter("password")
-						.successHandler(loginSuccessHandler) // ✅ dùng custom handler
-		                .permitAll()
-						)
+			
 				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/"));
 
 		return http.build();

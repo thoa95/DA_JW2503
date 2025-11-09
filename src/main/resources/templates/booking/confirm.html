@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
 </head>
+
 <body>
 	<div class="container mt-4">
 		<h3 class="text-center text-primary mb-3">
@@ -25,20 +27,17 @@
 						<td th:text="${item.roomName}"></td>
 						<td th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}"></td>
 						<td th:text="${item.numberDay}"></td>
-						<td
-							th:text="${#numbers.formatInteger(item.price * item.numberDay, 0, 'COMMA')}"></td>
+						<td th:text="${#numbers.formatInteger(item.price * item.numberDay, 0, 'COMMA')}"></td>
 					</tr>
 				</tbody>
 			</table>
 
 			<p class="text-end fw-bold">
-				Tổng cộng: <span
-					th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')}"></span>
+				Tổng cộng: <span th:text="${#numbers.formatInteger(totalPrice, 0, 'COMMA')}"></span>
 				VND
 			</p>
 
-			<form th:action="@{/booking/confirm}" method="post"
-				class="text-end mt-3">
+			<form th:action="@{/booking/confirm/save}" method="post" class="text-end mt-3">
 				<button type="submit" class="btn btn-primary btn-lg">
 					<i class="fas fa-check"></i> Xác nhận đặt phòng
 				</button>
@@ -48,4 +47,5 @@
 
 
 </body>
+
 </html>

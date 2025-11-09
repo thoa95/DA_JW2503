@@ -44,7 +44,34 @@ public class HotelService {
 				.collect(Collectors.toList());
 	}
 	
+	public List<HotelDTO> searchHotel(
+										List<Integer> evaluateList,
+										List<Long> typeHotelList,
+										Integer nearSea,
+										List<Long> cityIdList) {
+		
+		if (evaluateList == null || evaluateList.size() == 0) {
+			evaluateList = null;
+		}
+		
+
+	    if (evaluateList != null && evaluateList.contains(0)) {
+	        evaluateList = null;
+	    }
+	    
+		if (typeHotelList == null ||typeHotelList.size() == 0) {
+			typeHotelList = null;
+		}
+		if (cityIdList == null ||cityIdList.size() == 0) {
+			cityIdList = null;
+		}
+		
+		return hotelRepository.searchHotel(evaluateList, typeHotelList, nearSea, cityIdList);
+
+	}
 	
+	
+		
     private boolean filterByDanhGia(HotelDTO ks, List<Integer> filter) {
         return filter == null || filter.isEmpty() || filter.contains(ks.getEvaluate());
     }

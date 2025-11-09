@@ -29,7 +29,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
 			    INNER JOIN bkap_booking b ON br.booking_id = b.id
 			    WHERE h.id = :hotelId
-			      AND br.delete_flg = 0
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
 			      AND (
 			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
 			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
@@ -54,7 +54,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
 			    INNER JOIN bkap_booking b ON br.booking_id = b.id
 			    WHERE h.id = :hotelId
-			      AND br.delete_flg = 0
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
 			      AND (
 			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
 			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)

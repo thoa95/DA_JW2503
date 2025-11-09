@@ -34,6 +34,7 @@ public class PaymentService {
         payment.setVnpAmount(booking.getTotalAmount());
         payment.setPaymentStatus("SUCCESS");
         payment.setCreatedAt(new Date());
+        payment.setDeleteFlg(0);
 
         paymentRepository.save(payment);
     }

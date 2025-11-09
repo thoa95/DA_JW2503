@@ -92,43 +92,41 @@ public class HotelController {
 
 	@GetMapping("/filter")
 	@ResponseBody
-	public ResponseEntity<List<HotelDTO>> filterKhachSan(@RequestParam(required = false) List<Integer> danhGia,
-			@RequestParam(required = false) List<String> loaiKhachSan,
-			@RequestParam(required = false) List<Boolean> giapBien, @RequestParam(required = false) String thanhPho) {
+	public ResponseEntity<List<HotelDTO>> filterKhachSan(
+			@RequestParam(required = false) List<Integer> evaluateList,
+			@RequestParam(required = false) List<Long> typeHotelList,
+			@RequestParam(required = false) Integer nearSea,
+			@RequestParam(required = false) List<Long> cityList) {
 
-		List<HotelDTO> danhSachKhachSan;
-
-		if (thanhPho != null && !thanhPho.trim().isEmpty()) {
-			danhSachKhachSan = hotelService.searchByCity(thanhPho);
-		} else {
-			danhSachKhachSan = hotelService.getAllAsDTO(null);
-		}
-
-		List<HotelDTO> ketQua = hotelService.filterKhachSan(danhSachKhachSan, danhGia, loaiKhachSan, giapBien);
-
-		return ResponseEntity.ok(ketQua);
+		List<HotelDTO> result = hotelService.searchHotel(evaluateList, typeHotelList, nearSea, cityList);
+		return ResponseEntity.ok(result);
 	}
+	
+	
+	@GetMapping("/city/{id}")
+	public String getListHotelByCity(@PathVariable(required = false) Long id, Model model) {
+		List<TypeHotel> typeHotelList = typeHotelService.getAll();
+		List<City> cityList = cityService.getAll();
 
-//    @GetMapping("/thanh-pho/{id}")
-//    public String khachSanTheoThanhPho(@PathVariable Integer id, Model model) {
-//        List<KhachSan> danhSachKhachSan = khachSanService.findByThanhPhoId(id);
-//        Optional<ThanhPho> thanhPho = thanhPhoService.findById(id);
-//        
-//        model.addAttribute("danhSachKhachSan", danhSachKhachSan);
-//        model.addAttribute("thanhPho", thanhPho.orElse(null));
-//        
-//        return "danh-sach-khach-san";
-//    }
-//    
-//    @GetMapping("/loai/{id}")
-//    public String khachSanTheoLoai(@PathVariable Integer id, Model model) {
-//        List<KhachSan> danhSachKhachSan = khachSanService.findByLoaiKhachSanId(id);
-//        Optional<LoaiKhachSan> loaiKhachSan = loaiKhachSanService.findById(id);
-//        
-//        model.addAttribute("danhSachKhachSan", danhSachKhachSan);
-//        model.addAttribute("loaiKhachSan", loaiKhachSan.orElse(null));
-//        
-//        return "danh-sach-khach-san";
-//    }
-//    
+		model.addAttribute("cityList", cityList);
+		model.addAttribute("typeHotelList", typeHotelList);
+		model.addAttribute("selectedCity", id);
+		
+		return "danh-sach-khach-san";
+	}
+    
+    
+    
+    @GetMapping("/type/{id}")
+    public String getListHotelByType(@PathVariable(required = false) Long id, Model model) {
+    	List<TypeHotel> typeHotelList = typeHotelService.getAll();
+		List<City> cityList = cityService.getAll();
+
+		model.addAttribute("cityList", cityList);
+		model.addAttribute("typeHotelList", typeHotelList);
+		model.addAttribute("selectedType", id);
+		
+		return "danh-sach-khach-san";
+    }
+    
 }
