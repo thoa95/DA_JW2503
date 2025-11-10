@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/main}">
+
+<head>
+
+<title>Liên hệ | Hotel Booking</title>
+
+</head>
+<style>
+body {
+	background-color: #f8f9fa;
+	font-family: 'Segoe UI', sans-serif;
+}
+
+.blog-container {
+	max-width: 1100px;
+	margin: 40px auto;
+}
+
+.blog-post {
+	background: #fff;
+	border-radius: 12px;
+	overflow: hidden;
+	box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+	margin-bottom: 30px;
+	transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.blog-post:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.blog-post-thumb img {
+	width: 100%;
+	height: 250px;
+	object-fit: cover;
+}
+
+.blog-post-content {
+	padding: 25px;
+}
+
+.blog-post-title a {
+	font-size: 1.4rem;
+	font-weight: 600;
+	color: #0d6efd;
+	text-decoration: none;
+}
+
+.blog-post-title a:hover {
+	text-decoration: underline;
+}
+
+.blog-post-meta {
+	font-size: 0.9rem;
+	color: #6c757d;
+	margin-bottom: 10px;
+}
+
+.blog-post-meta i {
+	color: #0d6efd;
+}
+
+.blog-post-action {
+	color: #0d6efd;
+	font-weight: 500;
+	text-decoration: none;
+}
+
+.blog-post-action:hover {
+	text-decoration: underline;
+}
+</style>
+<body>
+	<div layout:fragment="content">
+		<div class="container">
+			<div class="blog-section-title">
+				<h2>Travel</h2>
+				<p>View the latest news on Travel</p>
+			</div>
+			<a class="btn btn-primary" th:href="@{/createblogger}" role="button">Đăng
+				bài viết mới</a>
+
+			<div class="blog-container">
+				<h2 class="text-center mb-5 fw-bold">Tin tức mới nhất</h2>
+
+				<div th:each="n : ${ne}" class="blog-post">
+					<div class="blog-post-thumb">
+						<img th:src="${n.image}" alt="news-thumbnail">
+					</div>
+
+					<div class="blog-post-content">
+						<div class="blog-post-title">
+							<a th:href="@{'/blog/' + ${n.news_id}}" th:text="${n.title}">Tiêu
+								đề tin tức</a>
+						</div>
+						<div class="blog-post-meta">
+							<ul class="list-inline mb-2">
+								<li class="list-inline-item"><i class="fa fa-user"></i> <span
+									th:text="${n.account.accountId}">Tác giả</span></li>
+								<li class="list-inline-item ms-3"><i class="fa fa-clock-o"></i>
+									<span th:text="${#temporals.format(n.createdat, 'dd/MM/yyyy')}"></span>
+								</li>
+								<li class="list-inline-item ms-3"><i class="fa fa-trash-o"></i><span><a
+										th:href="@{/news/delete/{id}(id=${n.news_id})}"
+										onclick="return confirm('Bạn chắc chắn muốn xóa tin này?');"> Xóa bài đăng</a></span></li>
+							</ul>
+						</div>
+						<p th:text="${#strings.abbreviate(n.content, 200)}"></p>
+					</div>
+				</div>
+			</div>
+			<script
+				src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+			<script src="https://kit.fontawesome.com/a076d05399.js"
+				crossorigin="anonymous"></script>
+		</div>
+	</div>
+</body>
+</html>
