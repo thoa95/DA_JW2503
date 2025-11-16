@@ -35,6 +35,6 @@ public class LoginController {
 		String hasPas = new BCryptPasswordEncoder().encode(account.getPassword());
 		account.setPassword(hasPas);
 		this.userService.create(account);
-		return "redirect: /login";
+		return "redirect:/login";
 	}
 }

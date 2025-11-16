@@ -1,206 +1,275 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title th:text="${title} ?: 'Quản Lý Khách Sạn'">Quản Lý Khách
-	Sạn</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title th:text="${title} ?: 'Quản Lý Khách Sạn'">Quản Lý Khách
+		Sạn</title>
 
-<!-- Bootstrap CSS -->
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<!-- Font Awesome -->
-<link
-	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-	rel="stylesheet">
-<!-- Custom CSS -->
-<link th:href="@{/css/style.css}" rel="stylesheet">
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<!-- Font Awesome -->
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+	<!-- Custom CSS -->
+	<link th:href="@{/css/style.css}" rel="stylesheet">
+
+	<style>
+		:root {
+			--primary-color: #0097b2;
+			--secondary-color: #7c3aed;
+			--accent-color: #a855f7;
+			--success-color: #10b981;
+			--danger-color: #ef4444;
+			--warning-color: #f59e0b;
+			--info-color: #06b6d4;
+			--light-bg: #fafbfc;
+			--card-bg: #ffffff;
+			--border-color: #e5e7eb;
+			--text-primary: #111827;
+			--text-secondary: #6b7280;
+			--dark-bg: #1f2937;
+			--gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+			--gradient-dark: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+		}
+
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+				Roboto, sans-serif;
+			background: linear-gradient(135deg, #fafbfc 0%, #f3f4f6 100%);
+			font-weight: 400;
+			letter-spacing: -0.01em;
+		}
+
+		.navbar-brand img {
+			height: 120px;
+			width: auto;
+			object-fit: contain;
+			/* tránh méo ảnh */
+		}
+
+		.hero-section {
+			background: var(--gradient-primary);
+			color: white;
+			padding: 100px 0;
+		}
+
+		.search-box {
+			background: white;
+			backdrop-filter: blur(20px);
+			-webkit-backdrop-filter: blur(20px);
+			border-radius: 20px;
+			padding: 20px;
+			box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+			margin-top: 40px;
+			border: 1px solid rgba(255, 255, 255, 0.2);
+		}
+
+		.card-hover {
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		}
+
+		.card-hover:hover {
+			transform: translateY(-8px) scale(1.02);
+			box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+		}
+
+		.btn-primary {
+			background: var(--primary-color);
+			border: none;
+			border-radius: 12px;
+			font-weight: 600;
+		}
+
+		.btn-primary:hover {
+			background: var(--gradient-primary);
+			transform: translateY(-2px);
+			box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+			filter: brightness(1.1);
+		}
+
+		.rating-stars {
+			color: #fbbf24;
+			filter: drop-shadow(0 1px 2px rgba(251, 191, 36, 0.3));
+		}
+
+		.footer {
+			background: #052C2C;
+			color: white;
+			padding: 60px 0 40px;
+			margin-top: 80px;
+		}
+
+		.custom-input {
+			border: 2px solid #f1c40f;
+			/* vàng */
+			box-shadow: none;
+		}
+
+		.custom-input:focus {
+			border-color: #f39c12;
+			/* vàng đậm hơn khi focus */
+			box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+		}
+
+		/* Làm navbar cao bằng logo */
+		.navbar {
+			height: 120px;
+			/* bằng chiều cao ảnh logo */
+			padding-top: 0;
+			padding-bottom: 0;
+		}
+
+		/* Menu chữ lớn hơn + căn giữa dọc */
+		.navbar-nav .nav-link {
+			color: #ffffff !important;
+			font-size: 1.1rem;
+			/* chữ to hơn */
+			font-weight: 500;
+			padding: 0 16px;
+			display: flex;
+			align-items: center;
+			height: 80px;
+			/* căn giữa dọc */
+			transition: color 0.3s ease;
+		}
+
+		/* Màu khi hover */
+		.navbar-nav .nav-link:hover {
+			color: #FFD700 !important;
+		}
+
+		/* Màu khi đang ở trang hiện tại */
+		.navbar-nav .nav-link.active {
+			color: #FFD700 !important;
+			font-weight: 600;
+			border-bottom: 3px solid #FFD700;
+			/* thêm gạch vàng nhỏ dưới */
+		}
+
+		.navbar-nav .nav-link.active {
+			color: #ffffff !important;
+			font-weight: 500;
+			font-size: 1.05rem;
+			transition: color 0.3s ease, transform 0.2s ease;
+		}
+
+		.navbar-nav .nav-link:hover {
+			color: #FFD700 !important;
+			/* vàng nhấn khi hover */
+			transform: translateY(-2px);
+		}
 
 
-<!-- Styles -->
-<link
-	href="https://fonts.googleapis.com/css?family=Open+Sans:400,400i,700&display=swap&subset=latin-ext"
-	rel="stylesheet">
-<link href="css/bootstrap.css" rel="stylesheet">
-<link href="css/fontawesome-all.css" rel="stylesheet">
-<link href="css/swiper.css" rel="stylesheet">
-<link href="css/magnific-popup.css" rel="stylesheet">
-<link href="css/styles.css" rel="stylesheet">
-<link href="js/styless.css" rel="stylesheet" />
+		/* cart booking */
+		/* Hiệu ứng rung giỏ hàng */
+		@keyframes cart-shake {
 
-<style>
-:root {
-	--primary-color: #0097b2;
-	--secondary-color: #7c3aed;
-	--accent-color: #a855f7;
-	--success-color: #10b981;
-	--danger-color: #ef4444;
-	--warning-color: #f59e0b;
-	--info-color: #06b6d4;
-	--light-bg: #fafbfc;
-	--card-bg: #ffffff;
-	--border-color: #e5e7eb;
-	--text-primary: #111827;
-	--text-secondary: #6b7280;
-	--dark-bg: #1f2937;
-	--gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
-	--gradient-dark: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-}
+			0%,
+			100% {
+				transform: rotate(0);
+			}
 
-body {
-	font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
-		Roboto, sans-serif;
-	background: linear-gradient(135deg, #fafbfc 0%, #f3f4f6 100%);
-	font-weight: 400;
-	letter-spacing: -0.01em;
-}
+			25% {
+				transform: rotate(-15deg);
+			}
 
-.navbar-brand img {
-	height: 120px;
-	width: auto;
-	object-fit: contain; /* tránh méo ảnh */
-}
+			50% {
+				transform: rotate(15deg);
+			}
 
-.hero-section {
-	background: var(--gradient-primary);
-	color: white;
-	padding: 100px 0;
-}
+			75% {
+				transform: rotate(-10deg);
+			}
+		}
 
-.search-box {
-	background: white;
-	backdrop-filter: blur(20px);
-	-webkit-backdrop-filter: blur(20px);
-	border-radius: 20px;
-	padding: 20px;
-	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px
-		rgba(0, 0, 0, 0.04);
-	margin-top: 40px;
-	border: 1px solid rgba(255, 255, 255, 0.2);
-}
+		.cart-shake {
+			animation: cart-shake 0.5s ease;
+		}
 
-.card-hover {
-	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+		/* ===== Ảnh bay ===== */
+		.fly-img {
+			position: fixed;
+			width: 80px;
+			height: 80px;
+			border-radius: 12px;
+			z-index: 2000;
+			transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+			pointer-events: none;
+		}
 
-.card-hover:hover {
-	transform: translateY(-8px) scale(1.02);
-	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px
-		rgba(0, 0, 0, 0.04);
-}
+		/* ===== Badge tăng ===== */
+		#cart-count {
+			transition: transform 0.3s ease, background-color 0.3s ease;
+		}
 
-.btn-primary {
-	background: var(--primary-color);
-	border: none;
-	border-radius: 12px;
-	font-weight: 600;
-}
+		#cart-count.bump {
+			transform: scale(1.3);
+			background-color: #ff6b6b;
+		}
 
-.btn-primary:hover {
-	background: var(--gradient-primary);
-	transform: translateY(-2px);
-	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px
-		rgba(0, 0, 0, 0.04);
-	filter: brightness(1.1);
-}
+		/* ===== Toast notification ===== */
+		.toast-container {
+			position: fixed;
+			top: 100px;
+			right: 20px;
+			z-index: 3000;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
 
-.rating-stars {
-	color: #fbbf24;
-	filter: drop-shadow(0 1px 2px rgba(251, 191, 36, 0.3));
-}
+		.toast {
+			background: #323232;
+			color: #fff;
+			padding: 12px 16px;
+			border-radius: 8px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+			opacity: 0;
+			transform: translateX(100%);
+			transition: all 0.4s ease;
+		}
 
-.footer {
-	background: #052C2C;
-	color: white;
-	padding: 60px 0 40px;
-	margin-top: 80px;
-}
+		.toast.show {
+			opacity: 1;
+			transform: translateX(0);
+		}
 
-.custom-input {
-	border: 2px solid #f1c40f; /* vàng */
-	box-shadow: none;
-}
+		.toast.success {
+			background: #28a745;
+		}
 
-.custom-input:focus {
-	border-color: #f39c12; /* vàng đậm hơn khi focus */
-	box-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
-}
-
-/* Làm navbar cao bằng logo */
-.navbar {
-	height: 120px; /* bằng chiều cao ảnh logo */
-	padding-top: 0;
-	padding-bottom: 0;
-}
-
-/* Menu chữ lớn hơn + căn giữa dọc */
-.navbar-nav .nav-link {
-	color: #ffffff !important;
-	font-size: 1.1rem; /* chữ to hơn */
-	font-weight: 500;
-	padding: 0 16px;
-	display: flex;
-	align-items: center;
-	height: 80px; /* căn giữa dọc */
-	transition: color 0.3s ease;
-}
-
-/* Màu khi hover */
-.navbar-nav .nav-link:hover {
-	color: #FFD700 !important;
-}
-
-/* Màu khi đang ở trang hiện tại */
-.navbar-nav .nav-link.active {
-	color: #FFD700 !important;
-	font-weight: 600;
-	border-bottom: 3px solid #FFD700; /* thêm gạch vàng nhỏ dưới */
-}
-
-.navbar-nav .nav-link.active {
-	color: #ffffff !important;
-	font-weight: 500;
-	font-size: 1.05rem;
-	transition: color 0.3s ease, transform 0.2s ease;
-}
-
-.navbar-nav .nav-link:hover {
-	color: #FFD700 !important; /* vàng nhấn khi hover */
-	transform: translateY(-2px);
-}
-</style>
+		.toast.error {
+			background: #dc3545;
+		}
+	</style>
 </head>
+
 <body>
 	<!-- Navigation -->
-	<nav class="navbar navbar-expand-lg navbar-dark"
-		style="background-color: var(--primary-color);">
+	<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: var(--primary-color);">
 		<div class="container">
-			<a class="navbar-brand" th:href="@{/}"> <img
-				th:src="@{/images/logo12.png}" alt="QLKS"
-				class="d-inline-block align-text-top">
+			<a class="navbar-brand" th:href="@{/}"> <img th:src="@{/images/logo12.png}" alt="QLKS"
+					class="d-inline-block align-text-top">
 			</a>
 
-			<button class="navbar-toggler" type="button"
-				data-bs-toggle="collapse" data-bs-target="#navbarNav">
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
 				<span class="navbar-toggler-icon"></span>
 			</button>
 
 			<div class="collapse navbar-collapse" id="navbarNav">
 				<ul class="navbar-nav me-auto">
-					<li class="nav-item"><a class="nav-link" th:href="@{/}"> <i
-							class="fas fa-home me-1"></i>Trang chủ
-					</a></li>
+					<li class="nav-item"><a class="nav-link" th:href="@{/}"> <i class="fas fa-home me-1"></i>Trang chủ
+						</a></li>
 					<li class="nav-item"><a class="nav-link" th:href="@{/hotel}">
 							<i class="fas fa-hotel me-1"></i>Khách sạn
-					</a></li>
+						</a></li>
 					<li class="nav-item"><a class="nav-link" th:href="@{/blog}">
 							<i class="fas fa-newspaper me-1"></i>Tin tức
-					</a></li>
+						</a></li>
 					<li class="nav-item"><a class="nav-link" th:href="@{/contact}">
 							<i class="fas fa-phone me-1"></i>Liên hệ
-					</a></li>
+						</a></li>
 				</ul>
 
 				<ul class="navbar-nav">
@@ -213,27 +282,40 @@ body {
 							class="fas fa-user-plus me-1"></i>Đăng ký
 					</a></li>
 					<li class="nav-item dropdown" sec:authorize="isAuthenticated()">
-						<a class="nav-link dropdown-toggle" href="#" role="button"
-						data-bs-toggle="dropdown"> <i class="fas fa-user me-1"></i> <span sec:authentication="name"
-							></span>
-					</a>
+						<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"> <i
+								class="fas fa-user me-1"></i> <span sec:authentication="name"></span>
+						</a>
 						<ul class="dropdown-menu">
-							<li><a class="dropdown-item" th:href="@{/tcn}"> <i
-									class="fas fa-user-circle me-2"></i>Trang cá nhân
-							</a></li>
+							<li><a class="dropdown-item" th:href="@{/tcn}"> <i class="fas fa-user-circle me-2"></i>Trang cá nhân
+								</a></li>
 							<li><a class="dropdown-item" th:href="@{/histo}">
 									<i class="fas fa-history me-2"></i>Lịch sử đặt phòng
-							</a></li>
-							<li ><a
-								class="dropdown-item" th:href="@{/admin}"> <i
-									class="fas fa-cog me-2"></i>Quản trị
-							</a></li>
-							<li><hr class="dropdown-divider"></li>
-							<li><a class="dropdown-item" th:href="@{/logout}"> <i
-									class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-							</a></li>
+								</a></li>
+							<li><a class="dropdown-item" th:href="@{/admin}"> <i class="fas fa-cog me-2"></i>Quản trị
+								</a></li>
+							<li>
+								<hr class="dropdown-divider">
+							</li>
+							<li><a class="dropdown-item" th:href="@{/logout}"> <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+								</a></li>
 						</ul>
 					</li>
+					<li class="nav-item me-3">
+						<a class="nav-link d-flex align-items-center" th:href="@{/cart}">
+							<span class="position-relative d-inline-block">
+								<i id="cart-icon" class="fa-solid fa-suitcase-rolling fa-lg"></i>
+								<span id="cart-count"
+									class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+									<span th:text="${session.cartItems == null ? 0 : session.cartItems.size()}">0</span>
+								</span>
+							</span>
+						</a>
+					</li>
+
+					<!-- Toast container -->
+					<div id="toast-container" class="toast-container"></div>
+
+					
 				</ul>
 			</div>
 		</div>
@@ -241,15 +323,12 @@ body {
 
 	<!-- Alert Messages -->
 	<div class="container mt-3" th:if="${success != null or error != null}">
-		<div class="alert alert-success alert-dismissible fade show"
-			role="alert" th:if="${success != null}">
+		<div class="alert alert-success alert-dismissible fade show" role="alert" th:if="${success != null}">
 			<i class="fas fa-check-circle me-2"></i> <span th:text="${success}"></span>
 			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 		</div>
-		<div class="alert alert-danger alert-dismissible fade show"
-			role="alert" th:if="${error != null}">
-			<i class="fas fa-exclamation-circle me-2"></i> <span
-				th:text="${error}"></span>
+		<div class="alert alert-danger alert-dismissible fade show" role="alert" th:if="${error != null}">
+			<i class="fas fa-exclamation-circle me-2"></i> <span th:text="${error}"></span>
 			<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
 		</div>
 	</div>
@@ -257,7 +336,7 @@ body {
 	<!-- Main Content -->
 	<main layout:fragment="content">
 		<div class="container">
-			
+			<h1>Content will be replaced</h1>
 		</div>
 	</main>
 
@@ -300,10 +379,9 @@ body {
 				<div class="col-md-3">
 					<h5>Theo dõi chúng tôi</h5>
 					<div class="d-flex gap-3">
-						<a href="#" class="text-light"><i
-							class="fab fa-facebook fa-2x"></i></a> <a href="#" class="text-light"><i
-							class="fab fa-youtube fa-2x"></i></a> <a href="#" class="text-light"><i
-							class="fab fa-instagram fa-2x"></i></a>
+						<a href="#" class="text-light"><i class="fab fa-facebook fa-2x"></i></a> <a href="#"
+							class="text-light"><i class="fab fa-youtube fa-2x"></i></a> <a href="#"
+							class="text-light"><i class="fab fa-instagram fa-2x"></i></a>
 					</div>
 				</div>
 			</div>
@@ -315,33 +393,141 @@ body {
 	</footer>
 
 	<!-- Bootstrap JS -->
-	<script
-		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 	<!-- Custom JS -->
 	<script th:src="@{/js/main.js}"></script>
 
-	<!-- Scripts -->
-	<script src="js/jquery.min.js"></script>
-	<script src="js/popper.min.js"></script>
-	<script src="js/bootstrap.min.js"></script>
-	<script src="js/jquery.easing.min.js"></script>
-	<script src="js/swiper.min.js"></script>
-	<script src="js/jquery.magnific-popup.js"></script>
-	<script src="js/validator.min.js"></script>
-	<script src="js/scripts.js"></script>
+	<script>
+		// ===== Hàm hiển thị Toast =====
+		function showToast(message, type = 'success') {
+			const container = document.getElementById('toast-container');
+			const toast = document.createElement('div');
+			toast.classList.add('toast', type);
+			toast.textContent = message;
+			container.appendChild(toast);
 
+			setTimeout(() => toast.classList.add('show'), 100); // hiệu ứng trượt vào
+			setTimeout(() => {
+				toast.classList.remove('show');
+				setTimeout(() => toast.remove(), 400);
+			}, 2500);
+		}
 
+		// ===== Thêm vào giỏ =====
+		document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+			button.addEventListener('click', function () {
+				const roomId = this.dataset.roomId;
+				const roomName = this.dataset.roomName;
+				const price = this.dataset.price;
+				const fromDate = this.dataset.fromDate;
+				const toDate = this.dataset.toDate;
+				const imgSrc = this.dataset.img;
 
-	<script
-		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9rV6yesIygoVKTD6QLf_iCa9eiIIHqZ0&libraries=geometry">
-		
+				if (!fromDate || !toDate || fromDate === 'null' || toDate === 'null') {
+					showToast('⚠️ Vui lòng chọn ngày nhận và trả phòng trước.', 'error');
+					return;
+				}
+
+				const originalHtml = this.innerHTML;
+				this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang thêm...';
+				this.disabled = true;
+
+				const formData = new URLSearchParams({roomId, roomName, price, fromDate, toDate});
+				fetch('/cart/add', {
+					method: 'POST',
+					headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+					body: formData.toString()
+				})
+					.then(response => {
+						const data = response.json().catch(() => ({}));
+						if (!response.ok) {
+							throw new Error(data.error || `"${roomName}" đã tồn tại trong giỏ hàng`);
+						}
+						// ===== Ảnh bay vào giỏ =====
+						const cartIcon = document.getElementById('cart-icon');
+						const rect = this.getBoundingClientRect();
+						const flyImg = document.createElement('img');
+						flyImg.src = imgSrc || '/images/default-room.jpg';
+						flyImg.classList.add('fly-img');
+						flyImg.style.left = rect.left + 'px';
+						flyImg.style.top = rect.top + 'px';
+						document.body.appendChild(flyImg);
+
+						const cartRect = cartIcon.getBoundingClientRect();
+						const x = cartRect.left - rect.left;
+						const y = cartRect.top - rect.top;
+
+						requestAnimationFrame(() => {
+							flyImg.style.transform = `translate(${x}px, ${y}px) scale(0.1)`;
+							flyImg.style.opacity = '0';
+						});
+						setTimeout(() => flyImg.remove(), 1000);
+
+						// ===== Rung giỏ & tăng số lượng =====
+						cartIcon.classList.add('cart-shake');
+						setTimeout(() => cartIcon.classList.remove('cart-shake'), 500);
+
+						const cartCount = document.getElementById('cart-count');
+						const current = parseInt(cartCount.textContent || '0');
+						cartCount.textContent = current + 1;
+						cartCount.classList.add('bump');
+						setTimeout(() => cartCount.classList.remove('bump'), 400);
+
+						showToast(`✅ Đã thêm phòng "${roomName}" vào giỏ hàng!`);
+					})
+					.catch(error => {
+						console.error(error);
+						showToast('❌ ' + error.message, 'error');
+					})
+					.finally(() => {
+						this.innerHTML = originalHtml;
+						this.disabled = false;
+					});
+			});
+		});
 	</script>
-	<!-- Vendor JS -->
-	<script src="vendor/jQuery/jquery.min.js"></script>
-	<script src="vendor/bootstrap/bootstrap.min.js"></script>
-	<script src="vendor/slick/slick.min.js"></script>
-	<script src="vendor/g-map/gmap.js"></script>
-	<!-- Main JS -->
-	<script src="js/script.js"></script>
+
+	<script>
+		function validateDates() {
+			const fromDate = document.getElementById('fromDate').value;
+			const toDate = document.getElementById('toDate').value;
+			if (!fromDate || !toDate) {
+				alert('Vui lòng chọn ngày nhận và trả phòng');
+				return false;
+			}
+			if (fromDate > toDate) {
+				alert('Ngày trả phải sau ngày nhận');
+				return false;
+			}
+			return true;
+		}
+
+	</script>
+	
+	<!-- Scripts -->
+		<script src="js/jquery.min.js"></script>
+		<script src="js/popper.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/jquery.easing.min.js"></script>
+		<script src="js/swiper.min.js"></script>
+		<script src="js/jquery.magnific-popup.js"></script>
+		<script src="js/validator.min.js"></script>
+		<script src="js/scripts.js"></script>
+
+
+
+		<script
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC9rV6yesIygoVKTD6QLf_iCa9eiIIHqZ0&libraries=geometry">
+			
+		</script>
+		<!-- Vendor JS -->
+		<script src="vendor/jQuery/jquery.min.js"></script>
+		<script src="vendor/bootstrap/bootstrap.min.js"></script>
+		<script src="vendor/slick/slick.min.js"></script>
+		<script src="vendor/g-map/gmap.js"></script>
+		<!-- Main JS -->
+		<script src="js/script.js"></script>
+
 </body>
+
 </html>

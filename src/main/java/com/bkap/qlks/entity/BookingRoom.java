@@ -2,8 +2,8 @@ package com.bkap.qlks.entity;
 
 import java.util.Date;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,10 +17,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BookingRoom {
-	@Id
-	private Long bookingId;
-	@Id
-	private Long roomId;
+	@EmbeddedId
+	private BookingRoomId bookingRoomId = new BookingRoomId();
 	private String accountId;
 	private Integer price;
 	private Date checkInDate;
