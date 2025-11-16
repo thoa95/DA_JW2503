@@ -31,7 +31,7 @@ public class CartController {
 	CartService cartService;
 
 	@GetMapping
-	public String showCart(@RequestParam(value = "pendingBooking", required = false) Boolean pendingBooking,
+	public String showCart(@RequestParam(name ="pendingBooking", value = "pendingBooking", required = false) Boolean pendingBooking,
 			HttpSession session, Model model) {
 
 		List<CartItem> cartItems = cartService.getCart(session);
@@ -49,8 +49,11 @@ public class CartController {
 	@SuppressWarnings("unchecked")
 	@PostMapping("/add")
 	@ResponseBody
-	public ResponseEntity<Map<String, Object>> addToCart(@RequestParam Long roomId, @RequestParam String roomName,
-			@RequestParam Integer price, @RequestParam String fromDate, @RequestParam String toDate,
+	public ResponseEntity<Map<String, Object>> addToCart(@RequestParam(name ="roomId") Long roomId,
+			@RequestParam(name ="roomName") String roomName,
+			@RequestParam(name ="price") Integer price,
+			@RequestParam(name ="fromDate") String fromDate,
+			@RequestParam(name ="toDate") String toDate,
 			HttpSession session) {
 
 		List<CartItem> cart = (List<CartItem>) session.getAttribute("cartItems");
@@ -71,7 +74,9 @@ public class CartController {
 	}
 
 	@PostMapping("/update")
-	public String updateCartItem(@RequestParam Long roomId, @RequestParam String fromDate, @RequestParam String toDate,
+	public String updateCartItem(@RequestParam(name ="roomId") Long roomId,
+			@RequestParam(name ="fromDate") String fromDate,
+			@RequestParam(name ="toDate") String toDate,
 			HttpSession session, RedirectAttributes redirectAttributes) {
 
 		@SuppressWarnings("unchecked")

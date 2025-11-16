@@ -61,7 +61,7 @@ public class PaymentController {
 
 	// chọn phương thức thanh toán
 	@PostMapping("/choose")
-	public String choosePayment(@RequestParam String method, HttpSession session,
+	public String choosePayment(@RequestParam(name ="method") String method, HttpSession session,
 			RedirectAttributes redirectAttributes) {
 		Long bookingId = (Long) session.getAttribute("bookingId");
 		if (bookingId == null) {

@@ -110,10 +110,10 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			    WHERE 
                 (:cityId IS NULL OR c.id = :cityId)
 			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
-			      AND (
-			          (br.check_in_date >= TO_DATE('2025-11-23', 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE('2025-11-23', 'YYYY-MM-DD'))
-			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
-			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			       AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
 			      )
 			      AND (
 			          b.payment_status IN ('PENDING', 'PAID')
@@ -123,7 +123,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			          )
 			      )
 			  )
-              AND (:cityId IS NULL OR c.id = :cityId)
+              AND (:cityId IS NULL OR c1.id = :cityId)
               AND (:bed IS NULL OR r.bed = :bed)
 			""",
 			countQuery = """
@@ -141,10 +141,10 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 			    WHERE 
                 (:cityId IS NULL OR c.id = :cityId)
 			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
-			      AND (
-			          (br.check_in_date >= TO_DATE('2025-11-23', 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE('2025-11-23', 'YYYY-MM-DD'))
-			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
-			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			       AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
 			      )
 			      AND (
 			          b.payment_status IN ('PENDING', 'PAID')
@@ -157,7 +157,7 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
               AND (:cityId IS NULL OR c1.id = :cityId)
               AND (:bed IS NULL OR r.bed = :bed)
 			""", nativeQuery = true)
-	Page<Room> getListAvailableRoom(@Param("cityId") Long cityId,
+	Page<Room> searchQuick(@Param("cityId") Long cityId,
 			@Param("checkIn") String checkIn,
 			@Param("checkOut") String checkOut,
 			@Param("bed") Integer bed,

@@ -2,8 +2,7 @@ package com.bkap.qlks.entity;
 
 
 
-import java.util.Date;
-
+import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -31,7 +30,7 @@ public class News {
 	private String content;
 	private String image;
 	@Column(name = "created_at")
-	private Date createdat;
+	private LocalDateTime createdat;
 	@ManyToOne
 	@JoinColumn(name = "account_id", referencedColumnName = "accountId")
 	private Account account;

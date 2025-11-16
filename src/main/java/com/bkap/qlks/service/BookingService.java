@@ -81,4 +81,20 @@ public class BookingService {
 
 		return booking;
 	}
+
+	public List<Booking> getBookingsByUsername(String username) {
+		return bookingRepository.findByAccountIdOrderByCreatedAtDesc(username);
+	}
+
+	public void cancelBooking(Long id) {
+		Booking booking = getBookingById(id);
+		if (booking != null) {
+			booking.setIsCancel(1);
+			booking.setPaymentStatus("Đã hủy");
+			bookingRepository.save(booking);
+		}
+	}
+
+	
+     
 }

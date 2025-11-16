@@ -28,7 +28,7 @@ public class RoomService {
 	
 	public Page<Room> searchQuick(Long hotelId, String checkIn, String checkOut,Integer bed, int numberPage, int size) {
 		Pageable pageable = PageRequest.of(numberPage, size);
-		return roomRepository.getListAvailableRoom(hotelId, checkIn, checkOut, bed, pageable);
+		return roomRepository.searchQuick(hotelId, checkIn, checkOut, bed, pageable);
 	}
 
 

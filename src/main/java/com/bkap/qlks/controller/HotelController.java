@@ -52,7 +52,7 @@ public class HotelController {
 	}
 
 	@GetMapping("/{id}")
-	public String getDetailHotel(@PathVariable Long id, @RequestParam(defaultValue = "0") int page, Model model) {
+	public String getDetailHotel(@PathVariable(name = "id") Long id, @RequestParam(name = "page", defaultValue = "0") int page, Model model) {
 		List<HotelDTO> hotelList = hotelService.getAllAsDTO(id);
 		if (hotelList.size() > 0) {
 			Page<Room> roomPage = roomService.getRoomsByHotelId(id, page, Const.size);
@@ -65,10 +65,10 @@ public class HotelController {
 	}
 
 	@GetMapping("/{id}/empty-room")
-	public String getEmptyRoomInHotel(@PathVariable Long id,
-									@RequestParam String fromDate,
-									@RequestParam String toDate,
-									@RequestParam(defaultValue = "0") int page,
+	public String getEmptyRoomInHotel(@PathVariable(name = "id") Long id,
+									@RequestParam(name = "fromDate") String fromDate,
+									@RequestParam(name = "toDate") String toDate,
+									@RequestParam(name = "page", defaultValue = "0") int page,
 									Model model) {
 		try {
 				
@@ -93,10 +93,10 @@ public class HotelController {
 	@GetMapping("/filter")
 	@ResponseBody
 	public ResponseEntity<List<HotelDTO>> filterKhachSan(
-			@RequestParam(required = false) List<Integer> evaluateList,
-			@RequestParam(required = false) List<Long> typeHotelList,
-			@RequestParam(required = false) Integer nearSea,
-			@RequestParam(required = false) List<Long> cityList) {
+			@RequestParam(name = "evaluateList",required = false) List<Integer> evaluateList,
+			@RequestParam(name = "typeHotelList",required = false) List<Long> typeHotelList,
+			@RequestParam(name = "nearSea",required = false) Integer nearSea,
+			@RequestParam(name = "cityList",required = false) List<Long> cityList) {
 
 		List<HotelDTO> result = hotelService.searchHotel(evaluateList, typeHotelList, nearSea, cityList);
 		return ResponseEntity.ok(result);
@@ -104,7 +104,7 @@ public class HotelController {
 	
 	
 	@GetMapping("/city/{id}")
-	public String getListHotelByCity(@PathVariable(required = false) Long id, Model model) {
+	public String getListHotelByCity(@PathVariable(name = "id", required = false) Long id, Model model) {
 		List<TypeHotel> typeHotelList = typeHotelService.getAll();
 		List<City> cityList = cityService.getAll();
 
@@ -118,7 +118,7 @@ public class HotelController {
     
     
     @GetMapping("/type/{id}")
-    public String getListHotelByType(@PathVariable(required = false) Long id, Model model) {
+    public String getListHotelByType(@PathVariable(name = "id",required = false) Long id, Model model) {
     	List<TypeHotel> typeHotelList = typeHotelService.getAll();
 		List<City> cityList = cityService.getAll();
 

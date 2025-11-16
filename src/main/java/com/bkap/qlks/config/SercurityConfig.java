@@ -4,27 +4,17 @@ package com.bkap.qlks.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.bkap.qlks.service.CustomLoginSuccessHandler;
-import com.bkap.qlks.service.CustomUserDetailService;
 
 @Configuration
 @EnableWebSecurity
 public class SercurityConfig {
-
-	@Autowired
-	private CustomUserDetailService customUserDetailService;
 
 	@Bean
 	BCryptPasswordEncoder passwordEncoder() {
@@ -65,25 +55,4 @@ public class SercurityConfig {
 				"/vendor/**", "/bootstrap/**");
 	}
 
-	// ✅ Bổ sung: AuthenticationProvider bỏ qua kiểm tra password
-	@Bean
-	public AuthenticationProvider customAuthenticationProvider() {
-		return new AuthenticationProvider() {
-			@Override
-			public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-				String username = authentication.getName();
-
-				// Gọi lại service của bạn
-				var userDetails = customUserDetailService.loadUserByUsername(username);
-
-				// ❌ Bỏ qua bước so sánh password, chỉ cần user tồn tại
-				return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-			}
-
-			@Override
-			public boolean supports(Class<?> authentication) {
-				return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-			}
-		};
-	}
 }
