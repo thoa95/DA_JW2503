@@ -20,7 +20,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bkap.qlks.dto.CartItem;
 import com.bkap.qlks.entity.Account;
+import com.bkap.qlks.entity.Room;
 import com.bkap.qlks.service.CartService;
+import com.bkap.qlks.service.RoomService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -29,6 +31,9 @@ import jakarta.servlet.http.HttpSession;
 public class CartController {
 	@Autowired
 	CartService cartService;
+	
+	@Autowired
+	RoomService roomService;
 
 	@GetMapping
 	public String showCart(@RequestParam(name ="pendingBooking", value = "pendingBooking", required = false) Boolean pendingBooking,
@@ -93,6 +98,13 @@ public class CartController {
 
 			if (to.isBefore(from)) {
 				redirectAttributes.addFlashAttribute("error", "❌ Ngày trả phải sau hoặc bằng ngày nhận!");
+				return "redirect:/cart";
+			}
+			
+			Room roomSearch =  roomService.checkEmptyRoom(roomId, fromDate, toDate);
+
+			if (roomSearch == null) {
+				redirectAttributes.addFlashAttribute("error", "Phòng đã có người đặt trong ngày này!");
 				return "redirect:/cart";
 			}
 

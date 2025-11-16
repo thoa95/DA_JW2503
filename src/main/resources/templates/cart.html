@@ -101,42 +101,45 @@
 						</thead>
 						<tbody>
 							<tr th:each="item : ${cartItems}">
+						
 								<td th:text="${item.roomName}"></td>
+						
 								<td>
 									<span th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}"></span> VND
 								</td>
+						
 								<td>
-									<input type="date" name="fromDate" class="form-control" th:value="${item.fromDate}"
-										required>
+									<form th:action="@{/cart/update}" method="post" class="update-form">
+										<input type="hidden" name="roomId" th:value="${item.roomId}">
+						
+										<input type="date" name="fromDate" class="form-control" th:value="${item.fromDate}" required>
 								</td>
+						
 								<td>
-									<input type="date" name="toDate" class="form-control" th:value="${item.toDate}"
-										required>
+									<input type="date" name="toDate" class="form-control" th:value="${item.toDate}" required>
 								</td>
+						
 								<td th:text="${item.numberDay}"></td>
+						
 								<td>
-									<span
-										th:text="${#numbers.formatInteger(item.price * item.numberDay, 0, 'COMMA')}"></span>
-									VND
+									<span th:text="${#numbers.formatInteger(item.price * item.numberDay, 0, 'COMMA')}"></span> VND
 								</td>
+						
 								<td class="d-flex gap-1 justify-content-center">
-									<form th:action="@{/cart/update}" method="post" class="d-inline">
-										<input type="hidden" name="roomId" th:value="${item.roomId}" />
-										<button type="submit" class="btn btn-outline-success btn-sm">
-											<i class="fa fa-sync"></i> Cập nhật
-										</button>
+									<button type="submit" class="btn btn-outline-success btn-sm">
+										<i class="fa fa-sync"></i> Cập nhật
+									</button>
 									</form>
-									<a th:href="@{'/cart/remove/' + ${item.roomId}}"
-										class="btn btn-outline-danger btn-sm">
+						
+									<a th:href="@{'/cart/remove/' + ${item.roomId}}" class="btn btn-outline-danger btn-sm">
 										<i class="fa fa-trash"></i> Xóa
 									</a>
 								</td>
-
-								<!--<td th:id="'status-' + ${item.roomId}"></td>-->
-								<td th:id="'status-' + ${item.roomId}" style="color:red; display:none; font-weight:bold;"></td>
-
+						
+								<td th:id="'status-' + ${item.roomId}" style="color:red; display:none; font-weight:bold;">
+								</td>
+						
 							</tr>
-
 						</tbody>
 
 					</table>
@@ -268,40 +271,6 @@
 		/*]]>*/
 	</script>
 
-
-<!--	<script>
-		document.getElementById('btnProceedBooking')?.addEventListener('click', function () {
-			fetch('/room/check-availability', { // server lấy cart từ session
-				method: 'POST',
-				headers: {'Content-Type': 'application/json'}
-			})
-				.then(res => res.json())
-				.then(data => {
-					let canProceed = true;
-
-					// Xóa thông báo cũ
-					document.querySelectorAll('[id^=status-]').forEach(el => el.textContent = '');
-
-					data.forEach(item => {
-						if (!item.available) {
-							canProceed = false;
-							let statusTd = document.getElementById('status-' + item.roomId);
-							if (statusTd) statusTd.textContent = 'Phòng đã hết!';
-						}
-					});
-
-					if (canProceed) {
-						let confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-						confirmModal.show();
-					}
-				})
-				.catch(err => {
-					console.error(err);
-					alert('Có lỗi xảy ra, vui lòng thử lại!');
-				});
-		});
-	</script>-->
-	
 	<script>
 		document.getElementById('btnProceedBooking')?.addEventListener('click', function () {
 		    fetch('/room/check-availability', { // server lấy cart từ session
