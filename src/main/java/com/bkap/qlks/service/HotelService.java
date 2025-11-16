@@ -28,7 +28,7 @@ public class HotelService {
 
 	public List<HotelDTO> searchByCity(String tenThanhPho) {
 		String tenKhongDau = VNCharacterUtils.removeAccent(tenThanhPho.toLowerCase());
-		return hotelRepository.findAllByCity().stream()
+		return hotelRepository.findAllByCity(null).stream()
 				.filter(ks -> VNCharacterUtils.removeAccent(ks.getCityName().toLowerCase()).contains(tenKhongDau))
 				.collect(Collectors.toList());
 	}

@@ -96,47 +96,47 @@
 								<th>Số ngày</th>
 								<th>Thành tiền</th>
 								<th>Thao tác</th>
+								<th id="status-header" style="display:none;">Trạng thái</th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr th:each="item : ${cartItems}">
-								<form th:action="@{/cart/update}" method="post">
-									<input type="hidden" name="roomId" th:value="${item.roomId}" />
-									<td th:text="${item.roomName}"></td>
-
-									<td>
-										<span th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}"></span> VND
-									</td>
-
-									<td>
-										<input type="date" name="fromDate" class="form-control"
-											th:value="${item.fromDate}" required>
-									</td>
-
-									<td>
-										<input type="date" name="toDate" class="form-control" th:value="${item.toDate}"
-											required>
-									</td>
-
-									<td th:text="${item.numberDay}"></td>
-									<td>
-										<span
-											th:text="${#numbers.formatInteger(item.price * item.numberDay, 0, 'COMMA')}"></span>
-										VND
-									</td>
-
-
-									<td class="d-flex justify-content-center gap-2">
+								<td th:text="${item.roomName}"></td>
+								<td>
+									<span th:text="${#numbers.formatInteger(item.price, 0, 'COMMA')}"></span> VND
+								</td>
+								<td>
+									<input type="date" name="fromDate" class="form-control" th:value="${item.fromDate}"
+										required>
+								</td>
+								<td>
+									<input type="date" name="toDate" class="form-control" th:value="${item.toDate}"
+										required>
+								</td>
+								<td th:text="${item.numberDay}"></td>
+								<td>
+									<span
+										th:text="${#numbers.formatInteger(item.price * item.numberDay, 0, 'COMMA')}"></span>
+									VND
+								</td>
+								<td class="d-flex gap-1 justify-content-center">
+									<form th:action="@{/cart/update}" method="post" class="d-inline">
+										<input type="hidden" name="roomId" th:value="${item.roomId}" />
 										<button type="submit" class="btn btn-outline-success btn-sm">
 											<i class="fa fa-sync"></i> Cập nhật
 										</button>
-										<a th:href="@{'/cart/remove/' + ${item.roomId}}"
-											class="btn btn-outline-danger btn-sm">
-											<i class="fa fa-trash"></i> Xóa
-										</a>
-									</td>
-								</form>
+									</form>
+									<a th:href="@{'/cart/remove/' + ${item.roomId}}"
+										class="btn btn-outline-danger btn-sm">
+										<i class="fa fa-trash"></i> Xóa
+									</a>
+								</td>
+
+								<!--<td th:id="'status-' + ${item.roomId}"></td>-->
+								<td th:id="'status-' + ${item.roomId}" style="color:red; display:none; font-weight:bold;"></td>
+
 							</tr>
+
 						</tbody>
 
 					</table>
@@ -153,20 +153,37 @@
 							th:text="${totalPrice != null ? #numbers.formatInteger(totalPrice, 0, 'COMMA') + ' VND' : '—'}"></span>
 					</p>
 				</div>
-				
+
 				<!-- Nếu ĐÃ đăng nhập -->
-				<div class="d-flex justify-content-end mt-3">
+				<!--<div class="d-flex justify-content-end mt-3">
 				    <button th:if="${account != null}" type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
 				        data-bs-target="#confirmModal">
 				        <i class="fas fa-credit-card me-2"></i>Tiến hành đặt phòng
 				    </button>
 
-				    <!-- Nếu CHƯA đăng nhập -->
+				     Nếu CHƯA đăng nhập 
 				    <button th:if="${account == null}" type="button" class="btn btn-success btn-lg" data-bs-toggle="modal"
 				        data-bs-target="#loginModal">
 				        <i class="fas fa-credit-card me-2"></i>Tiến hành đặt phòng
 				    </button>
+					
+					
+				</div>-->
+
+				<div class="d-flex justify-content-end mt-3">
+					<!-- Nếu ĐÃ đăng nhập: gọi JS kiểm tra phòng -->
+					<button th:if="${account != null}" type="button" class="btn btn-success btn-lg"
+						id="btnProceedBooking">
+						<i class="fas fa-credit-card me-2"></i>Tiến hành đặt phòng
+					</button>
+
+					<!-- Nếu CHƯA đăng nhập: vẫn mở modal login -->
+					<button th:if="${account == null}" type="button" class="btn btn-success btn-lg"
+						data-bs-toggle="modal" data-bs-target="#loginModal">
+						<i class="fas fa-credit-card me-2"></i>Tiến hành đặt phòng
+					</button>
 				</div>
+
 
 				<!-- Modal xác nhận đặt phòng -->
 				<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
@@ -250,6 +267,82 @@
 		}
 		/*]]>*/
 	</script>
+
+
+<!--	<script>
+		document.getElementById('btnProceedBooking')?.addEventListener('click', function () {
+			fetch('/room/check-availability', { // server lấy cart từ session
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'}
+			})
+				.then(res => res.json())
+				.then(data => {
+					let canProceed = true;
+
+					// Xóa thông báo cũ
+					document.querySelectorAll('[id^=status-]').forEach(el => el.textContent = '');
+
+					data.forEach(item => {
+						if (!item.available) {
+							canProceed = false;
+							let statusTd = document.getElementById('status-' + item.roomId);
+							if (statusTd) statusTd.textContent = 'Phòng đã hết!';
+						}
+					});
+
+					if (canProceed) {
+						let confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+						confirmModal.show();
+					}
+				})
+				.catch(err => {
+					console.error(err);
+					alert('Có lỗi xảy ra, vui lòng thử lại!');
+				});
+		});
+	</script>-->
+	
+	<script>
+		document.getElementById('btnProceedBooking')?.addEventListener('click', function () {
+		    fetch('/room/check-availability', { // server lấy cart từ session
+		        method: 'POST',
+		        headers: {'Content-Type': 'application/json'}
+		    })
+		    .then(res => res.json())
+		    .then(data => {
+		        let canProceed = true;
+
+		        data.forEach(item => {
+		            let statusTd = document.getElementById('status-' + item.roomId);
+		            if(!item.available) {
+		                canProceed = false;
+		                if(statusTd) {
+		                    statusTd.textContent = 'Phòng đã hết!';
+		                    statusTd.style.display = 'table-cell'; // hiện cột
+		                }
+		            } else {
+		                if(statusTd) {
+		                    statusTd.style.display = 'none'; // ẩn cột nếu phòng còn
+		                }
+		            }
+		        });
+
+		        if(canProceed) {
+		            let confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+		            confirmModal.show();
+		        }
+		    })
+		    .catch(err => {
+		        console.error(err);
+		        alert('Có lỗi xảy ra, vui lòng thử lại!');
+		    });
+		});
+
+		</script>
+		
+	
+
+
 </body>
 
 </html>

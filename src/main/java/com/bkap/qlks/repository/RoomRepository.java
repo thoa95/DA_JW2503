@@ -93,5 +93,103 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 //			""", nativeQuery = true)
 //	Page<Room> findBookedRooms(@Param("hotelId") Long hotelId, @Param("checkIn") String checkIn,
 //			@Param("checkOut") String checkOut, Pageable pageable);
+	
+	
+	@Query(value = """
+			SELECT r.*
+			FROM bkap_room r
+            INNER JOIN bkap_hotel h1 ON r.hotel_id = h1.id
+            INNER JOIN bkap_city c1 ON c1.id = h1.city_id
+			WHERE r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
+			    INNER JOIN bkap_booking b ON br.booking_id = b.id
+			    INNER JOIN bkap_city c ON c.id = h.city_id
+			    WHERE 
+                (:cityId IS NULL OR c.id = :cityId)
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			      AND (
+			          (br.check_in_date >= TO_DATE('2025-11-23', 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE('2025-11-23', 'YYYY-MM-DD'))
+			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
+			      AND (
+			          b.payment_status IN ('PENDING', 'PAID')
+			          OR (
+			              b.payment_status = 'UNPAID'
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+			          )
+			      )
+			  )
+              AND (:cityId IS NULL OR c.id = :cityId)
+              AND (:bed IS NULL OR r.bed = :bed)
+			""",
+			countQuery = """
+			SELECT COUNT(*)
+			FROM bkap_room r
+            INNER JOIN bkap_hotel h1 ON r.hotel_id = h1.id
+            INNER JOIN bkap_city c1 ON c1.id = h1.city_id
+			WHERE r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
+			    INNER JOIN bkap_booking b ON br.booking_id = b.id
+			    INNER JOIN bkap_city c ON c.id = h.city_id
+			    WHERE 
+                (:cityId IS NULL OR c.id = :cityId)
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			      AND (
+			          (br.check_in_date >= TO_DATE('2025-11-23', 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE('2025-11-23', 'YYYY-MM-DD'))
+			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE('2025-11-23', 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
+			      AND (
+			          b.payment_status IN ('PENDING', 'PAID')
+			          OR (
+			              b.payment_status = 'UNPAID'
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+			          )
+			      )
+			  )
+              AND (:cityId IS NULL OR c1.id = :cityId)
+              AND (:bed IS NULL OR r.bed = :bed)
+			""", nativeQuery = true)
+	Page<Room> getListAvailableRoom(@Param("cityId") Long cityId,
+			@Param("checkIn") String checkIn,
+			@Param("checkOut") String checkOut,
+			@Param("bed") Integer bed,
+			Pageable pageable);
+	
+	@Query(value = """
+			SELECT r.*
+			FROM bkap_room r
+			WHERE r.id = :roomId
+			  AND r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
+			    INNER JOIN bkap_booking b ON br.booking_id = b.id
+			    WHERE r.id = :roomId
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			      AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
+			      AND (
+			          b.payment_status IN ('PENDING', 'PAID')
+			          OR (
+			              b.payment_status = 'UNPAID'
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+			          )
+			      )
+			  )
+				""", nativeQuery = true)
+	Room checkEmptyRoom(@Param("roomId") Long hotelId, @Param("checkIn") String checkIn,
+			@Param("checkOut") String checkOut);
 
 }

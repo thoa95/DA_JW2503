@@ -488,8 +488,22 @@
 		});
 	</script>
 
+	<script>
+		function validateDates() {
+			const fromDate = document.getElementById('fromDate').value;
+			const toDate = document.getElementById('toDate').value;
+			if (!fromDate || !toDate) {
+				alert('Vui lòng chọn ngày nhận và trả phòng');
+				return false;
+			}
+			if (fromDate > toDate) {
+				alert('Ngày trả phải sau ngày nhận');
+				return false;
+			}
+			return true;
+		}
 
-
+	</script>
 
 </body>
 

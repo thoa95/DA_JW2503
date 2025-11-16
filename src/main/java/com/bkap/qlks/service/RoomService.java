@@ -25,13 +25,20 @@ public class RoomService {
 		Pageable pageable = PageRequest.of(numberPage, size);
 		return roomRepository.findAvailableRoomsNative(hotelId, checkIn, checkOut, pageable);
 	}
-
-//	public Page<Room> findBookedRooms(Long hotelId, String checkIn, String checkOut) {
-//		return roomRepository.findBookedRooms(hotelId, checkIn, checkOut);
-//	}
 	
+	public Page<Room> searchQuick(Long hotelId, String checkIn, String checkOut,Integer bed, int numberPage, int size) {
+		Pageable pageable = PageRequest.of(numberPage, size);
+		return roomRepository.getListAvailableRoom(hotelId, checkIn, checkOut, bed, pageable);
+	}
+
+
 	public List<Room> getByInIds(List<Long> idRooms){
 		return roomRepository.findRoomsByInIdList (idRooms);
 	}
+	
+	public Room checkEmptyRoom(Long idRoom, String checkIn, String checkOut){
+		return roomRepository.checkEmptyRoom (idRoom, checkIn, checkOut);
+	}
+	
 	
 }
