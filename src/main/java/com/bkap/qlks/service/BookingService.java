@@ -1,11 +1,19 @@
 package com.bkap.qlks.service;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,14 +95,75 @@ public class BookingService {
 	}
 
 	public void cancelBooking(Long id) {
-		Booking booking = getBookingById(id);
-		if (booking != null) {
-			booking.setIsCancel(1);
-			booking.setPaymentStatus("Đã hủy");
-			bookingRepository.save(booking);
-		}
+	    Booking booking = getBookingById(id);
+	    if (booking != null) {
+
+	        // 1) Đánh dấu đã hủy
+	        booking.setIsCancel(1);
+
+	        // 2) Không được đổi payment_status sang tiếng Việt (sai CHECK)
+	        // Nếu muốn đánh dấu hủy thì chỉ giữ UNPAID hoặc PAID
+	        if (!"PAID".equals(booking.getPaymentStatus())) {
+	            booking.setPaymentStatus("UNPAID");
+	        }
+
+	        booking.setUpdateAt(new Date());
+	        bookingRepository.save(booking);
+	    }
+	}
+	public byte[] exportInvoiceExcel(Long bookingId) {
+	    Booking booking = getBookingById(bookingId);
+
+	    try (Workbook workbook = new XSSFWorkbook()) {
+	        Sheet sheet = workbook.createSheet("Invoice");
+
+	        // STYLE BOLD
+	        CellStyle headerStyle = workbook.createCellStyle();
+	        Font font = workbook.createFont();
+	        font.setBold(true);
+	        headerStyle.setFont(font);
+
+	        int rowIdx = 0;
+
+	        // --- HEADER ---
+	        Row header = sheet.createRow(rowIdx++);
+	        header.createCell(0).setCellValue("HÓA ĐƠN ĐẶT PHÒNG");
+	        header.getCell(0).setCellStyle(headerStyle);
+
+	        rowIdx++; // dòng trống
+
+	        // --- INFO ---
+	        Row r1 = sheet.createRow(rowIdx++);
+	        r1.createCell(0).setCellValue("Mã đặt phòng:");
+	        r1.createCell(1).setCellValue(booking.getId());
+
+	        Row r2 = sheet.createRow(rowIdx++);
+	        r2.createCell(0).setCellValue("Khách hàng:");
+	        r2.createCell(1).setCellValue(booking.getAccountId());
+
+	        Row r3 = sheet.createRow(rowIdx++);
+	        r3.createCell(0).setCellValue("Ngày đặt:");
+	        r3.createCell(1).setCellValue(booking.getCreatedAt().toString());
+
+	        Row r4 = sheet.createRow(rowIdx++);
+	        r4.createCell(0).setCellValue("Tổng tiền:");
+	        r4.createCell(1).setCellValue(booking.getTotalAmount());
+
+	        Row r5 = sheet.createRow(rowIdx++);
+	        r5.createCell(0).setCellValue("Trạng thái:");
+	        r5.createCell(1).setCellValue(
+	                booking.getIsCancel() == 1 ? "Đã hủy" :
+	                        (booking.getPaymentStatus().equals("PAID") ? "Đã thanh toán" : "Chưa thanh toán")
+	        );
+
+	        // Xuất ra byte[]
+	        ByteArrayOutputStream output = new ByteArrayOutputStream();
+	        workbook.write(output);
+	        return output.toByteArray();
+
+	    } catch (IOException e) {
+	        throw new RuntimeException("Lỗi xuất file Excel", e);
+	    }
 	}
 
-	
-     
 }

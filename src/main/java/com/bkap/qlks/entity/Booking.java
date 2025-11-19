@@ -24,8 +24,8 @@ public class Booking {
 	private Long id;
 	private String accountId;
 	private Integer totalAmount;
-	private Integer isCancel;
-	private String paymentStatus;
+	private Integer isCancel = 0;          // 0 = chưa hủy, 1 = đã hủy
+	private String paymentStatus = "CHUA_THANH_TOAN";
 	private Date createdAt;
 	private Date updateAt;
 	private Integer deleteFlg;	
