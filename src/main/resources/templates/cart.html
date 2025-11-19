@@ -4,7 +4,6 @@
 
 <head>
 	<title>Giỏ Booking</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
 	<style>
@@ -63,6 +62,20 @@
 			color: #adb5bd;
 			margin-bottom: 20px;
 		}
+		.cart-card .table td .btn {
+		    min-width: 0 !important;       /* bỏ min-width mặc định */
+		    width: auto !important;        /* width theo nội dung */
+		    display: inline-flex !important; /* giữ icon+text */
+		    align-items: center;           /* căn giữa icon+text */
+		    justify-content: center;
+		    padding: 0.35rem 0.6rem !important; /* tăng padding vừa phải */
+		    font-size: 0.85rem !important; /* tăng font chữ */
+		    border-radius: 6px !important; /* bo góc vừa phải */
+		}
+		.cart-card .table td,
+		.cart-card .table th {
+		    font-size: 1.05rem !important;
+		}
 	</style>
 </head>
 
@@ -79,7 +92,7 @@
 				<h5>Giỏ hàng trống</h5>
 				<p>Hãy quay lại trang khách sạn để chọn phòng.</p>
 				<a th:href="@{/hotel}" class="btn btn-primary mt-3">
-					<i class="fas fa-bed me-1"></i>Quay lại khách sạn
+					<i class="fas fa-hotel me-1"></i>Quay lại khách sạn
 				</a>
 			</div>
 
@@ -125,16 +138,24 @@
 									<span th:text="${#numbers.formatInteger(item.price * item.numberDay, 0, 'COMMA')}"></span> VND
 								</td>
 						
-								<td class="d-flex gap-1 justify-content-center">
-									<button type="submit" class="btn btn-outline-success btn-sm">
-										<i class="fa fa-sync"></i> Cập nhật
-									</button>
-									</form>
-						
-									<a th:href="@{'/cart/remove/' + ${item.roomId}}" class="btn btn-outline-danger btn-sm">
-										<i class="fa fa-trash"></i> Xóa
-									</a>
+								<td class="text-center">
+								    <div class="d-flex justify-content-center gap-1">
+								        <form th:action="@{/cart/update}" method="post" class="m-0">
+								            <input type="hidden" name="roomId" th:value="${item.roomId}">
+								            <button type="submit" class="btn btn-success btn-sm">
+								                <i class="fa fa-sync"></i> Cập nhật
+								            </button>
+								        </form>
+
+								        <a th:href="@{'/cart/remove/' + ${item.roomId}}"
+								           class="btn btn-outline-danger btn-sm px-2 py-1"
+								           style="font-size: 0.75rem;">
+								           <i class="fa fa-trash"></i> Xóa
+								        </a>
+								    </div>
 								</td>
+
+
 						
 								<td th:id="'status-' + ${item.roomId}" style="color:red; display:none; font-weight:bold;">
 								</td>
@@ -258,7 +279,6 @@
 	</div>
 
 	<!-- Load Bootstrap JS trước script mở modal -->
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 	<!-- Script tự bật modal khi pendingBooking=true -->
 	<script th:inline="javascript">
@@ -297,8 +317,7 @@
 		        });
 
 		        if(canProceed) {
-		            let confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-		            confirmModal.show();
+					$('#confirmModal').modal('show');
 		        }
 		    })
 		    .catch(err => {
@@ -309,6 +328,7 @@
 
 		</script>
 		
+		<!-- override scripts -->
 	
 
 

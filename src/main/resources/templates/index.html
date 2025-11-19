@@ -98,6 +98,57 @@
 			background: linear-gradient(90deg, #6610f2, #0d6efd);
 			transform: scale(1.05);
 		}
+		
+		.hero-text h1 {
+		    color: white !important;
+		}
+
+		.hero-text p {
+		    color: #f8f9fa !important;
+		}
+
+		.booking-box {
+		    color: #000 !important; /* đảm bảo form luôn đen */
+		}
+		
+		/* Font size cho form trong hero */
+		#hero .booking-box input.form-control,
+		#hero .booking-box select.form-select,
+		#hero .booking-box label,
+		#hero .booking-box button {
+		    font-size: 1.1rem; /* 16px, có thể tăng lên 1.1rem nếu muốn */
+		}
+
+		#hero .booking-box .form-label {
+		    font-weight: 600;
+		}
+
+		#hero .booking-box button.btn {
+		    font-size: 1rem;
+		    font-weight: 600;
+		}
+		
+		.hero-text h1 {
+		    font-size: 3rem; /* tăng cỡ chữ */
+		    line-height: 1.2;
+		    color: white;
+		    display: -webkit-box;
+		    -webkit-line-clamp: 2; /* chỉ hiển thị 2 dòng */
+		    -webkit-box-orient: vertical;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		}
+
+		.hero-text p {
+		    font-size: 1.25rem; /* tăng cỡ chữ */
+		    line-height: 1.4;
+		    color: #f8f9fa;
+		    display: -webkit-box;
+		    -webkit-line-clamp: 2; /* chỉ hiển thị 2 dòng */
+		    -webkit-box-orient: vertical;
+		    overflow: hidden;
+		    text-overflow: ellipsis;
+		}
 	</style>
 
 	<!-- Bootstrap Icons -->
@@ -156,18 +207,17 @@
 			<div class="container position-absolute top-50 start-50 translate-middle text-white">
 				<div class="row align-items-center">
 					<!-- Bên trái: tên & slogan -->
-					<div class="col-md-6 mb-4 mb-md-0 text-center text-md-start">
-						<h1 class="display-4 fw-bold mb-3">Khám phá khách sạn mơ ước của bạn</h1>
-						<p class="lead">Tận hưởng kỳ nghỉ tuyệt vời với những ưu đãi đặc biệt dành riêng cho bạn.</p>
+					<div class="col-md-6 mb-4 mb-md-0 text-center text-md-start hero-text">
+					    <h1 class="display-4 fw-bold mb-3">Khám phá khách sạn mơ ước của bạn</h1>
+					    <p class="lead">Tận hưởng kỳ nghỉ tuyệt vời với những ưu đãi đặc biệt dành riêng cho bạn.</p>
 					</div>
-
 					<!-- Bên phải: form booking -->
-					<div class="col-md-4 offset-md-1">
+					<div class="col-md-4 offset-md-2">
 						<div class="booking-box bg-white text-dark p-4 rounded-4 shadow-lg"
 							style="border-top: 5px solid #0d6efd; transition: transform 0.3s, box-shadow 0.3s;">
 
 							<h3 class="text-center mb-4 fw-bold"
-								style="color: #0d6efd; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
+								style="color: #0d6efd; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);  font-size: 1.5rem;">
 								Booking Your Hotel
 							</h3>
 
