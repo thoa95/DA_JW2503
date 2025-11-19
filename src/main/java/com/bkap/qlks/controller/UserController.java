@@ -72,12 +72,9 @@ public class UserController {
 
 	// Xử lý đổi mật khẩu
 	@PostMapping("/change-password")
-	public String changePassword(
-			@RequestParam("oldPassword") String oldPassword,
-			@RequestParam("newPassword") String newPassword,
-			@RequestParam("confirmPassword") String confirmPassword,
-			Principal principal,
-			Model model) {
+	public String changePassword(@RequestParam("oldPassword") String oldPassword,
+			@RequestParam("newPassword") String newPassword, @RequestParam("confirmPassword") String confirmPassword,
+			Principal principal, Model model) {
 
 		// Lấy account hiện tại
 		String username = principal.getName();

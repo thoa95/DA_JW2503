@@ -34,10 +34,10 @@ import java.util.Optional;
 public class ContactController {
 	@Autowired
 	private NewsService newsService;
-@Autowired 
-private NewsRepository newsRepository;
-@Autowired
-private UserRepository userRepository;
+	@Autowired
+	private NewsRepository newsRepository;
+	@Autowired
+	private UserRepository userRepository;
 
 	@GetMapping("/blog")
 	public String tt(Model model) {
@@ -68,21 +68,27 @@ private UserRepository userRepository;
 			String uploadDir = "src/main/resources/static/images/";
 			String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
 
-			Path path = Paths.get(fileName);
-			Files.createDirectories(path.getParent());
-			Files.copy(imageFile.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			Path path = Paths.get(uploadDir);
 
-	
-			
+			// Tạo thư mục nếu chưa có
+			if (!Files.exists(path)) {
+			    Files.createDirectories(path);
+			}
+
+			// Đường dẫn file đầy đủ
+			Path filePath = path.resolve(fileName);
+
+			// Lưu file
+			Files.copy(imageFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
 			news.setImage(fileName);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-	
 		Account acc = new Account();
-		acc.setAccountId(account); 
+		acc.setAccountId(account);
 		news.setAccount(acc);
 		news.setCreatedat(LocalDateTime.now());
 
@@ -91,21 +97,21 @@ private UserRepository userRepository;
 
 		return "redirect:/blog";
 	}
-    
-    @GetMapping("/news/delete/{id}")
-    public String deleteNews(@PathVariable Long id, Authentication authentication) {
-        Optional<News> newsOpt = newsRepository.findById(id);
-        if (newsOpt.isPresent()) {
-            News news = newsOpt.get();
-            String currentUserId = authentication.getName();
 
-            if (news.getAccount() != null && news.getAccount().getAccountId().equals(currentUserId)) {
-                newsRepository.delete(news);
-                return "redirect:/blog?deleted";
-            } else {
-                return "redirect:/blog?error=notowner";
-            }
-        }
-        return "redirect:/blog?error=notfound";
-    }
+	@GetMapping("/news/delete/{id}")
+	public String deleteNews(@PathVariable Long id, Authentication authentication) {
+		Optional<News> newsOpt = newsRepository.findById(id);
+		if (newsOpt.isPresent()) {
+			News news = newsOpt.get();
+			String currentUserId = authentication.getName();
+
+			if (news.getAccount() != null && news.getAccount().getAccountId().equals(currentUserId)) {
+				newsRepository.delete(news);
+				return "redirect:/blog?deleted";
+			} else {
+				return "redirect:/blog?error=notowner";
+			}
+		}
+		return "redirect:/blog?error=notfound";
+	}
 }

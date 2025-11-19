@@ -1,8 +1,9 @@
 package com.bkap.qlks.repository;
 
-import java.sql.Date;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,59 +13,183 @@ import com.bkap.qlks.entity.Room;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
-	List<Room> findByHotelId(Long hotelID);
+	Page<Room> findByHotelId(Long hotelID, Pageable pageable);
+	
+	@Query(value = "SELECT r FROM Room r where r.id IN (:roomIds)")
+	List<Room> findRoomsByInIdList(List<Long> roomIds);
 
 	@Query(value = """
 			SELECT r.*
 			FROM bkap_room r
-			WHERE r.id NOT IN (
-			    SELECT r.id
-			    FROM bkap_room r
-			    INNER JOIN bkap_hotel h ON r.hotel_id = h.id
-			    INNER JOIN bkap_booking_room br ON r.id = br.room_id
+			WHERE r.hotel_id = :hotelId
+			  AND r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
 			    INNER JOIN bkap_booking b ON br.booking_id = b.id
 			    WHERE h.id = :hotelId
-			      AND br.check_in_date >= :checkIn
-			      AND br.check_out_date <= :checkOut
-			      AND br.delete_flg = 0
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			      AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
 			      AND (
 			          b.payment_status IN ('PENDING', 'PAID')
 			          OR (
 			              b.payment_status = 'UNPAID'
-			              AND (SYSDATE - b.updated_at) * 24 * 60 <= 20
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
 			          )
 			      )
-			)
-			""", nativeQuery = true)
-			List<Room> findAvailableRoomsNative(
-			    @Param("hotelId") Long hotelId,
-			    @Param("checkIn") Date checkIn,
-			    @Param("checkOut") Date checkOut
-			);
-
-	@Query(value = """
-			SELECT r.*
+			  )
+			""", countQuery = """
+			SELECT COUNT(*)
 			FROM bkap_room r
-			INNER JOIN bkap_hotel h ON r.hotel_id = h.id
-			INNER JOIN bkap_booking_room br ON r.id = br.room_id
-			INNER JOIN bkap_booking b ON br.booking_id = b.id
-			WHERE h.id = :hotelId
-			  AND br.check_in_date >= :checkIn
-			  AND br.check_out_date <= :checkOut
-			  AND br.delete_flg = 0
-			  AND (
-			      b.payment_status IN ('PENDING', 'PAID')
-			      OR (
-			          b.payment_status = 'UNPAID'
-			          AND (SYSDATE - b.updated_at) * 24 * 60 <= 20
+			WHERE r.hotel_id = :hotelId
+			  AND r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
+			    INNER JOIN bkap_booking b ON br.booking_id = b.id
+			    WHERE h.id = :hotelId
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			      AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
+			      AND (
+			          b.payment_status IN ('PENDING', 'PAID')
+			          OR (
+			              b.payment_status = 'UNPAID'
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+			          )
 			      )
 			  )
 			""", nativeQuery = true)
-			List<Room> findBookedRooms(
-			    @Param("hotelId") Long hotelId,
-			    @Param("checkIn") Date checkIn,
-			    @Param("checkOut") Date checkOut
-			);
-
+	Page<Room> findAvailableRoomsNative(@Param("hotelId") Long hotelId, @Param("checkIn") String checkIn,
+			@Param("checkOut") String checkOut, Pageable pageable);
+	
+//	@Query(value = """
+//			SELECT r.*
+//			FROM bkap_room r
+//			INNER JOIN bkap_hotel h ON r.hotel_id = h.id
+//			INNER JOIN bkap_booking_room br ON r.id = br.room_id
+//			INNER JOIN bkap_booking b ON br.booking_id = b.id
+//			WHERE h.id = :hotelId
+//			  AND (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+//			           OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+//			           OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+//			  AND br.delete_flg = 0
+//			  AND (
+//			      b.payment_status IN ('PENDING', 'PAID')
+//			      OR (
+//			          b.payment_status = 'UNPAID'
+//			          AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+//			      )
+//			  )
+//			""", nativeQuery = true)
+//	Page<Room> findBookedRooms(@Param("hotelId") Long hotelId, @Param("checkIn") String checkIn,
+//			@Param("checkOut") String checkOut, Pageable pageable);
+	
+	
+	@Query(value = """
+			SELECT r.*
+			FROM bkap_room r
+            INNER JOIN bkap_hotel h1 ON r.hotel_id = h1.id
+            INNER JOIN bkap_city c1 ON c1.id = h1.city_id
+			WHERE r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
+			    INNER JOIN bkap_booking b ON br.booking_id = b.id
+			    INNER JOIN bkap_city c ON c.id = h.city_id
+			    WHERE 
+                (:cityId IS NULL OR c.id = :cityId)
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			       AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
+			      AND (
+			          b.payment_status IN ('PENDING', 'PAID')
+			          OR (
+			              b.payment_status = 'UNPAID'
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+			          )
+			      )
+			  )
+              AND (:cityId IS NULL OR c1.id = :cityId)
+              AND (:bed IS NULL OR r.bed = :bed)
+			""",
+			countQuery = """
+			SELECT COUNT(*)
+			FROM bkap_room r
+            INNER JOIN bkap_hotel h1 ON r.hotel_id = h1.id
+            INNER JOIN bkap_city c1 ON c1.id = h1.city_id
+			WHERE r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
+			    INNER JOIN bkap_booking b ON br.booking_id = b.id
+			    INNER JOIN bkap_city c ON c.id = h.city_id
+			    WHERE 
+                (:cityId IS NULL OR c.id = :cityId)
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			       AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
+			      AND (
+			          b.payment_status IN ('PENDING', 'PAID')
+			          OR (
+			              b.payment_status = 'UNPAID'
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+			          )
+			      )
+			  )
+              AND (:cityId IS NULL OR c1.id = :cityId)
+              AND (:bed IS NULL OR r.bed = :bed)
+			""", nativeQuery = true)
+	Page<Room> searchQuick(@Param("cityId") Long cityId,
+			@Param("checkIn") String checkIn,
+			@Param("checkOut") String checkOut,
+			@Param("bed") Integer bed,
+			Pageable pageable);
+	
+	@Query(value = """
+			SELECT r.*
+			FROM bkap_room r
+			WHERE r.id = :roomId
+			  AND r.id NOT IN (
+			    SELECT r2.id
+			    FROM bkap_room r2
+			    INNER JOIN bkap_hotel h ON r2.hotel_id = h.id
+			    INNER JOIN bkap_booking_room br ON r2.id = br.room_id
+			    INNER JOIN bkap_booking b ON br.booking_id = b.id
+			    WHERE r.id = :roomId
+			      AND (br.delete_flg IS NULL OR br.delete_flg = 0)
+			      AND (
+			          (br.check_in_date >= TO_DATE(:checkIn, 'YYYY-MM-DD') AND br.check_out_date <= TO_DATE(:checkOut, 'YYYY-MM-DD'))
+			          OR (TO_DATE(:checkIn, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			          OR (TO_DATE(:checkOut, 'YYYY-MM-DD') BETWEEN br.check_in_date AND br.check_out_date)
+			      )
+			      AND (
+			          b.payment_status IN ('PENDING', 'PAID')
+			          OR (
+			              b.payment_status = 'UNPAID'
+			              AND (SYSDATE - b.update_at) * 24 * 60 <= 20
+			          )
+			      )
+			  )
+				""", nativeQuery = true)
+	Room checkEmptyRoom(@Param("roomId") Long hotelId, @Param("checkIn") String checkIn,
+			@Param("checkOut") String checkOut);
 
 }

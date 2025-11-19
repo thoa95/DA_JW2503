@@ -1,0 +1,33 @@
+*   [33md6eda91[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmy-merge[m[33m)[m Resolve merge conflicts
+[31m|[m[32m\[m  
+[31m|[m *   [33ma8bc19d[m[33m ([m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge pull request #3 from thoa95/fix/update_cart
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33mbc028ed[m fix update cart
+[31m|[m [33m|[m[33m/[m  
+[31m|[m *   [33m350efc8[m Merge pull request #2 from thoa95/feature/merge_booking_into_master
+[31m|[m [35m|[m[36m\[m  
+[31m|[m [35m|[m *   [33m1187e43[m fix conflict
+[31m|[m [35m|[m [1;31m|[m[35m\[m  
+[31m|[m [35m|[m [1;31m|[m[35m/[m  
+[31m|[m [35m|[m[35m/[m[1;31m|[m   
+[31m|[m [35m|[m * [33m49a4e92[m detail room
+[31m|[m [35m|[m * [33m58b67e6[m fix home page
+[31m|[m [35m|[m * [33m6a333ae[m[33m ([m[1;31morigin/feature/add_cart_booking[m[33m)[m login for payment
+[31m|[m [35m|[m * [33m9a8b891[m create payment-booking
+[31m|[m [35m|[m * [33m45c851a[m create cart booking
+* [35m|[m [1;32m|[m [33md10dfdd[m[33m ([m[1;31morigin/my-merge[m[33m)[m pull code
+[35m|[m[35m/[m [1;32m/[m  
+* [1;32m|[m   [33m4959e8d[m Merge pull request #1 from quocbao/my-merge
+[1;32m|[m[1;34m\[m [1;32m\[m  
+[1;32m|[m [1;34m|[m[1;32m/[m  
+[1;32m|[m[1;32m/[m[1;34m|[m   
+[1;32m|[m * [33m2a2628b[m Update .gitignore: ignore bin, settings, target
+[1;32m|[m * [33m189481d[m hoàn thành giao diện sửa thông tin cá nhân và lịch sử
+[1;32m|[m * [33m19a1c63[m các chức năng trang cá nhân, lịch sử, ....
+[1;32m|[m * [33m0257097[m Overwrite with my Hotel-Booking code
+[1;32m|[m[1;32m/[m  
+* [33m0bc4b8e[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mmaster[m[33m)[m fix get available room
+* [33m54932f9[m get available room
+* [33m7d9cae0[m get list room
+* [33mbf589ff[m change DDL sql
+* [33m4b40264[m create model

@@ -1,204 +1,210 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/main}">
-<head>
-    <title>Danh sách Khách sạn - Quản Lý Khách Sạn</title>
-</head>
-<body>
-    <main layout:fragment="content">
-        <div class="container py-4">
-            <h2 class="text-center mb-4">Các Khách sạn tìm thấy</h2>
-            
-            <div class="row">
-                <!-- Bộ lọc -->
-                <div class="col-md-3">
-                    <div class="card" style="background: rgba(248, 250, 252, 0.9); border: 1px solid #e2e8f0;">
-                        <div class="card-header">
-                            <h5 class="mb-0"><i class="fas fa-filter me-2"></i>Chọn lọc theo</h5>
-                        </div>
-                        <div class="card-body">
-                            <form id="filterForm">
-                                <!-- Xếp hạng -->
-                                <div class="mb-4">
-                                    <h6 class="fw-bold">Xếp hạng</h6>
-                                    <div class="form-check" th:each="i : ${#numbers.sequence(0, 5)}">
-                                        <input class="form-check-input filter-checkbox" type="checkbox" 
-                                               th:id="'rating-' + ${i}" th:value="${i}" name="danhGia">
-                                        <label class="form-check-label" th:for="'rating-' + ${i}">
-                                            <span th:if="${i == 0}">Không xếp hạng</span>
-                                            <span th:if="${i > 0}" th:text="${i} + ' Sao'">1 Sao</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <!-- Loại khách sạn -->
-                                <div class="mb-4" th:if="${typeHotelList != null}">
-                                    <h6 class="fw-bold">Loại khách sạn</h6>
-                                    <div class="form-check" th:each="item : ${typeHotelList}">
-                                        <input class="form-check-input filter-checkbox" type="checkbox" 
-                                               th:id="'type-' + ${item.id}" th:value="${item.name}" name="loaiKhachSan">
-                                        <label class="form-check-label" th:for="'type-' + ${item.id}" th:text="${item.name}">
-                                            Loại khách sạn
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <!-- Giáp biển -->
-                                <div class="mb-4">
-                                    <h6 class="fw-bold">Giáp biển</h6>
-                                    <div class="form-check">
-                                        <input class="form-check-input filter-checkbox" type="checkbox" id="beach-false" value="false" name="giapBien">
-                                        <label class="form-check-label" for="beach-false">Không giáp</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input filter-checkbox" type="checkbox" id="beach-true" value="true" name="giapBien">
-                                        <label class="form-check-label" for="beach-true">Có giáp</label>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Danh sách khách sạn -->
-                <div class="col-md-9">
-                    <div id="hotelList">
-                        <div class="row" th:if="${hotelList != null and !hotelList.empty}">
-                            <div class="col-12 mb-4" th:each="hotel : ${hotelList}">
-                                <a th:href="@{/hotel/{id}(id=${hotel.id})}" class="text-decoration-none">
-                                    <div class="card card-hover">
-                                        <div class="row g-0">
-                                            <div class="col-md-4">
-                                                <img th:src="@{'/images/KhachSan/' + ${hotel.id} + '.jpg'}" 
-                                                     class="img-fluid rounded-start h-100" alt="Khách sạn" style="object-fit: cover;">
-                                            </div>
-                                            <div class="col-md-8">
-                                                <div class="card-body">
-                                                    <div class="d-flex justify-content-between align-items-start">
-                                                        <div>
-                                                            <h5 class="card-title text-primary" th:text="${hotel.name}">Tên khách sạn</h5>
-                                                           <p class="text-muted mb-2">
-                                                                <i class="fas fa-map-marker-alt me-1"></i>
-                                                                <span class="fw-bold text-success" th:text="${hotel.cityName}">Thành phố</span>
-                                                               
-                                                            </p>
-                                                            <p class="text-muted mb-2" th:text="${hotel.typeHotelName}">Loại khách sạn</p>
-                                                            <p class="mb-2">
-                                                                Giáp biển: <span th:text="${hotel.nearSea == 0 ? 'Có' : 'Không'}">Không</span>
-                                                            </p>
-                                                            <p class="card-text text-muted" th:text="${hotel.description}">Mô tả</p>
-                                                        </div>
-														<div class="text-end">
-														                <!-- Sao động -->
-														                <div class="rating-stars fs-4">
-														                    <span th:each="i : ${#numbers.sequence(1,5)}"
-														                          th:text="${i <= hotel.evaluate ? '★' : '☆'}"
-														                          class="text-warning"></span>
-														                </div>
 
-														                <!-- Text đánh giá -->
-														                <small class="text-primary fw-bold"
-														                       th:text="${hotel.evaluate == 0 ? 'Bình thường' : 
-														                                hotel.evaluate == 1 ? 'Khá ổn' :
-														                                hotel.evaluate == 2 ? 'Chất lượng' :
-														                                hotel.evaluate == 3 ? 'Sang trọng' :
-														                                hotel.evaluate == 4 ? 'Tuyệt vời' : 'Xuất sắc'}">
-														                    Xuất sắc
-														                </small>
-														            </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+<head>
+	<meta charset="UTF-8">
+	<title>Danh sách khách sạn</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+	<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+	<style>
+		.card-hover:hover {
+			transform: scale(1.02);
+			transition: 0.2s;
+		}
+
+		.filter-card {
+			background: linear-gradient(135deg, #f8fafc, #e0f7fa);
+			border-radius: 12px;
+			padding: 20px;
+		}
+
+		.spinner {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 200px;
+		}
+	</style>
+</head>
+
+<body layout:fragment="content">
+	<div class="container py-4">
+		<h2 class="text-center mb-4 text-primary">Danh sách khách sạn</h2>
+		<div class="row">
+		
+			<div class="col-md-3">
+				<div class="filter-card shadow-lg">
+					<h5 class="fw-bold mb-4 text-success text-center">Tìm kiếm theo</h5>
+ 
+					<div class="mb-4">
+						<label class="fw-bold text-secondary">Giáp biển</label>
+						<div class="form-check mt-2">
+							<input class="form-check-input" type="radio" name="nearSea" value="">
+							<label class="form-check-label">Tất cả</label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="nearSea" value="0">
+							<label class="form-check-label">Có giáp biển</label>
+						</div>
+						<div class="form-check">
+							<input class="form-check-input" type="radio" name="nearSea" value="1">
+							<label class="form-check-label">Không giáp biển</label>
+						</div>
+					</div>
+
+				
+					<div class="mb-4" th:if="${cityList != null}">
+						<label class="fw-bold text-secondary">Thành phố</label>
+						<div th:each="c : ${cityList}" class="form-check mt-2">
+							<input class="form-check-input" type="checkbox" name="cityList" th:value="${c.id}"
+								th:checked="${selectedCity != null} ? ${c.id} == ${selectedCity} : false">
+							<label class="form-check-label" th:text="${c.name}"></label>
+						</div>
+					</div>
+
+					<div class="mb-4" th:if="${typeHotelList != null}">
+						<label class="fw-bold text-secondary">Loại khách sạn</label>
+						<div th:each="t : ${typeHotelList}" class="form-check mt-2">
+							<input class="form-check-input" type="checkbox" name="typeHotelList" th:value="${t.id}"
+							th:checked="${selectedType != null} ? ${t.id} == ${selectedType} : false">
+							<label class="form-check-label" th:text="${t.name}"></label>
+						</div>
+					</div>
+
+			
+					<div class="mb-4">
+						<label class="fw-bold text-secondary">Xếp hạng</label>
+						<div th:each="i : ${#numbers.sequence(1,5)}" class="form-check mt-2">
+							<input class="form-check-input" type="checkbox" name="evaluateList" th:value="${i}">
+							<label class="form-check-label" th:text="${i + ' Sao'}"></label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			
+			<div class="col-md-9">
+				<div id="hotelList" class="row"></div>
+			</div>
+		</div>
+
+
+		<div class="row">
+			<div class="col-12 d-flex justify-content-center">
+				<nav class="mt-4">
+					<ul id="pagination" class="pagination"></ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const filterInputs = document.querySelectorAll(
+				'input[name="evaluateList"], input[name="typeHotelList"], input[name="cityList"], input[name="nearSea"]'
+			);
+			const hotelListContainer = document.getElementById('hotelList');
+			const paginationContainer = document.getElementById('pagination');
+			let currentPage = 0;
+			const pageSize = 6;
+
+			function applyFilters(page = 0) {
+				currentPage = page;
+				const params = new URLSearchParams();
+
+				document.querySelectorAll('input[name="evaluateList"]:checked').forEach(cb => params.append('evaluateList', cb.value));
+				document.querySelectorAll('input[name="typeHotelList"]:checked').forEach(cb => params.append('typeHotelList', cb.value));
+				document.querySelectorAll('input[name="cityList"]:checked').forEach(cb => params.append('cityList', cb.value));
+				const nearSea = document.querySelector('input[name="nearSea"]:checked');
+				if (nearSea && nearSea.value !== '') params.append('nearSea', nearSea.value);
+
+				hotelListContainer.innerHTML = '<div class="spinner"><div class="spinner-border text-primary" role="status"></div></div>';
+
+				fetch('/hotel/filter?' + params.toString())
+					.then(res => res.json())
+					.then(data => renderHotels(data, page))
+					.catch(err => {
+						console.error(err);
+						hotelListContainer.innerHTML = '<p class="text-danger text-center mt-5">Lỗi tải dữ liệu</p>';
+					});
+			}
+
+			function renderHotels(hotels, page) {
+				hotelListContainer.innerHTML = '';
+				if (!hotels || hotels.length === 0) {
+					hotelListContainer.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4 class="text-muted">Không tìm thấy khách sạn nào</h4>
+                </div>`;
+					paginationContainer.innerHTML = '';
+					return;
+				}
+
+				const start = page * pageSize;
+				const end = start + pageSize;
+				const hotelsToShow = hotels.slice(start, end);
+
+				hotelsToShow.forEach(hotel => {
+					const html = `
+                <div class="col-12 mb-3">
+                    <div class="card card-hover shadow-sm">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <a href="/hotel/${hotel.id}">
+                                    <img src="/images/KhachSan/${hotel.id}.jpg"
+                                         class="img-fluid rounded-start"
+                                         style="height: 200px; width: 100%; object-fit: cover;">
                                 </a>
                             </div>
-                        </div>
-                        
-                        <div class="text-center py-5" th:if="${hotelList == null or hotelList.empty}">
-                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                            <h4 class="text-muted">Không tìm thấy khách sạn nào</h4>
-                            <p class="text-muted">Vui lòng thử lại với từ khóa khác</p>
+                            <div class="col-md-8 position-relative">
+                                <div class="card-body">
+                                    <div class="position-absolute top-0 end-0 me-3 mt-2 text-end">
+                                        <div class="rating-stars fs-5">
+                                            ${[1, 2, 3, 4, 5].map(i => `<span class="text-warning">${i <= (hotel.evaluate ?? 0) ? '★' : '☆'}</span>`).join('')}
+                                        </div>
+                                        <small class="text-primary fw-bold">
+                                            ${hotel.evaluate == 0 ? 'Bình thường' : hotel.evaluate == 1 ? 'Khá ổn' : hotel.evaluate == 2 ? 'Chất lượng' : hotel.evaluate == 3 ? 'Sang trọng' : hotel.evaluate == 4 ? 'Tuyệt vời' : 'Xuất sắc'}
+                                        </small>
+                                    </div>
+                                    <h5 class="card-title text-primary mb-2">
+                                        <a href="/hotel/${hotel.id}" class="text-decoration-none text-primary">${hotel.name}</a>
+                                    </h5>
+                                    <p class="mb-1"><i class="fas fa-map-marker-alt me-1 text-danger"></i> <span class="fw-bold text-success">${hotel.cityName ?? ''}</span></p>
+                                    <p class="mb-1"><i class="fas fa-hotel me-1 text-warning"></i> ${hotel.typeHotelName ?? ''}</p>
+                                    <p class="mb-1"><i class="fas fa-water me-1 text-primary"></i> Giáp biển: <b>${hotel.nearSea == 0 ? 'Có' : 'Không'}</b></p>
+                                    <p class="text-muted small mt-2"><i class="fas fa-info-circle me-1 text-secondary"></i> ${hotel.description ?? ''}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </main>
-    
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-	    const filterCheckboxes = document.querySelectorAll('.filter-checkbox');
-	    const hotelListContainer = document.getElementById('hotelList');
+                </div>`;
+					hotelListContainer.insertAdjacentHTML('beforeend', html);
+				});
 
-	    function applyFilters() {
-	        // Thu thập filter đã chọn
-	        const params = new URLSearchParams();
+				renderPagination(hotels.length);
+			}
 
-	        filterCheckboxes.forEach(cb => {
-	            if (cb.checked) {
-	                // Nếu có nhiều checkbox cùng name thì server nhận thành mảng
-	                params.append(cb.name, cb.value);
-	            }
-	        });
+			function renderPagination(totalItems) {
+				const totalPages = Math.ceil(totalItems / pageSize);
+				paginationContainer.innerHTML = '';
+				for (let i = 0; i < totalPages; i++) {
+					const li = document.createElement('li');
+					li.className = 'page-item ' + (i === currentPage ? 'active' : '');
+					li.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
+					li.addEventListener('click', e => {e.preventDefault(); applyFilters(i);});
+					paginationContainer.appendChild(li);
+				}
+			}
 
-	        // Gọi API backend (thay đường dẫn bằng API thật)
-	        fetch('/khach-san/filter?' + params.toString())
-	            .then(response => response.json())
-	            .then(data => {
-	                // Xóa danh sách cũ
-	                hotelListContainer.innerHTML = '';
+			filterInputs.forEach(input => input.addEventListener('change', () => applyFilters(0)));
 
-	                if (data.length === 0) {
-	                    hotelListContainer.innerHTML = '<p>Không tìm thấy khách sạn nào.</p>';
-	                    return;
-	                }
-
-	                // Render danh sách mới
-	                data.forEach(hotel => {
-	                    const hotelHtml = `
-	                        <div class="col-12 mb-4">
-	                            <a href="/khach-san/${hotel.id}" class="text-decoration-none">
-	                                <div class="card card-hover">
-	                                    <div class="row g-0">
-	                                        <div class="col-md-4">
-	                                            <img src="/images/KhachSan/${hotel.id}.jpg"
-	                                                 class="img-fluid rounded-start h-100" 
-	                                                 alt="Khách sạn" style="object-fit: cover;">
-	                                        </div>
-	                                        <div class="col-md-8">
-	                                            <div class="card-body">
-	                                                <h5 class="card-title text-muted">${hotel.name}</h5>
-	                                                <p class="text-muted mb-2">
-	                                                    <i class="fas fa-map-marker-alt me-1"></i>
-	                                                    <span class="fw-bold text-success">${hotel.cityName}</span>
-	                                                </p>
-	                                                <p class="text-muted mb-2">${hotel.typeHotelName}</p>
-	                                                <p class="mb-2">
-	                                                    Giáp biển: <span class="text-primary">${hotel.nearSea == 0 ? 'Có' : 'Không'}</span>
-	                                                </p>
-	                                                <p class="card-text text-muted">${hotel.description}</p>
-	                                            </div>
-	                                        </div>
-	                                    </div>
-	                                </div>
-	                            </a>
-	                        </div>`;
-	                    hotelListContainer.insertAdjacentHTML('beforeend', hotelHtml);
-	                });
-	            })
-	            .catch(error => {
-	                console.error('Error loading hotels:', error);
-	                hotelListContainer.innerHTML = '<p class="text-danger">Có lỗi xảy ra khi tải dữ liệu.</p>';
-	            });
-	    }
-
-	    // Gắn event change cho từng checkbox
-	    filterCheckboxes.forEach(checkbox => {
-	        checkbox.addEventListener('change', applyFilters);
-	    });
-	});
+			// Nếu có selectedCity từ controller thì check luôn và load
+			//applyFilters();
+			applyFilters(0);
+		});
 	</script>
-
 </body>
+
 </html>

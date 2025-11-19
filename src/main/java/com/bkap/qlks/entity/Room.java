@@ -29,6 +29,7 @@ public class Room {
 	private String description;
 	private Integer bed;
 	private Long hotelId;
+	private String urlImage;
 	@ManyToMany
 	@JoinTable(name = "bkap_room_amenity", joinColumns = @JoinColumn(name = "room_id"), inverseJoinColumns = @JoinColumn(name = "amenity_id"))
 	private List<Amenity> amenities;

@@ -89,7 +89,8 @@ body {
 
 				<div th:each="n : ${ne}" class="blog-post">
 					<div class="blog-post-thumb">
-						<img th:src="${n.image}" alt="news-thumbnail">
+						<img th:src="@{'/images/' + ${n.image}}" alt="news-thumbnail">
+
 					</div>
 
 					<div class="blog-post-content">
@@ -106,7 +107,8 @@ body {
 								</li>
 								<li class="list-inline-item ms-3"><i class="fa fa-trash-o"></i><span><a
 										th:href="@{/news/delete/{id}(id=${n.news_id})}"
-										onclick="return confirm('Bạn chắc chắn muốn xóa tin này?');"> Xóa bài đăng</a></span></li>
+										onclick="return confirm('Bạn chắc chắn muốn xóa tin này?');">
+											Xóa bài đăng</a></span></li>
 							</ul>
 						</div>
 						<p th:text="${#strings.abbreviate(n.content, 200)}"></p>

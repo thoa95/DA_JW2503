@@ -28,6 +28,5 @@ public class Booking {
 	private String paymentStatus;
 	private Date createdAt;
 	private Date updateAt;
-	private Integer deleteFlg;
-	
+	private Integer deleteFlg;	
 }
