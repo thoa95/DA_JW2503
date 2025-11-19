@@ -6,14 +6,19 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bkap.qlks.entity.Account;
 import com.bkap.qlks.entity.Booking;
@@ -63,6 +68,13 @@ public class UserController {
 
 		model.addAttribute("bookings", bookings);
 		return "lichsudatphong";
+	}
+
+	@GetMapping("/booking/cancel/{id}")
+	public String cancelBooking(@PathVariable Long id, RedirectAttributes ra) {
+		bookingService.cancelBooking(id);
+		ra.addFlashAttribute("success", "Hủy đặt phòng thành công!");
+		return "redirect:/histo";
 	}
 
 	@GetMapping("/change-password")
@@ -143,9 +155,15 @@ public class UserController {
 		return "redirect:/tcn?success=updated";
 	}
 
-	@GetMapping("/chitietls")
-	public String chitietlsu() {
-		return "chitietlichsu";
+	@GetMapping("/booking/invoice/{id}")
+	public ResponseEntity<byte[]> exportInvoice(@PathVariable Long id) {
+		byte[] excelData = bookingService.exportInvoiceExcel(id);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.setContentDispositionFormData("attachment", "hoa-don-" + id + ".xlsx");
+
+		return ResponseEntity.ok().headers(headers).body(excelData);
 	}
 
 	@GetMapping("/huydatphong")
