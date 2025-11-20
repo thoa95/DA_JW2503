@@ -2,7 +2,10 @@ package com.bkap.qlks.controller;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bkap.qlks.entity.Account;
 import com.bkap.qlks.entity.Booking;
+import com.bkap.qlks.entity.BookingRoom;
+import com.bkap.qlks.repository.BookingRoomRepository;
 import com.bkap.qlks.repository.UserRepository;
 import com.bkap.qlks.service.BookingService;
 
@@ -34,6 +39,8 @@ public class UserController {
 
 	@Autowired
 	private BCryptPasswordEncoder passEncoder;
+	@Autowired
+	private BookingRoomRepository bookingRoomRepo;
 
 	@GetMapping("/tcn")
 	public String tcn(Model model, Authentication authentication) {
@@ -59,14 +66,23 @@ public class UserController {
 
 	@GetMapping("/histo")
 	public String histo(Model model, Principal principal) {
-		String username = principal.getName();
+		if (principal == null) {
+			return "redirect:/login";
+		}
 
+		String username = principal.getName();
 		List<Booking> bookings = bookingService.getBookingsByUsername(username);
-		if (bookings == null) {
-			bookings = new ArrayList<>();
+
+		Map<Long, List<BookingRoom>> roomsMap = new HashMap<>();
+		for (Booking b : bookings) {
+			List<BookingRoom> list = bookingRoomRepo.findByBookingRoomId_BookingId(b.getId());
+			roomsMap.put(b.getId(), list);
 		}
 
 		model.addAttribute("bookings", bookings);
+		model.addAttribute("roomsMap", roomsMap);
+		model.addAttribute("now", new Date());
+
 		return "lichsudatphong";
 	}
 
