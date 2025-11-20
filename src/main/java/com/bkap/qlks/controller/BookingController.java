@@ -75,13 +75,10 @@ public class BookingController {
 	        redirectAttributes.addFlashAttribute("error", "Giỏ hàng trống!");
 	        return "redirect:/cart";
 	    }
-	    
-	    // save booking
-	    Booking booking = bookingService.createBooking(account, cartItems);
-	    
-	    //add attribute
-	    session.setAttribute("bookingId", booking.getId());
-	    cartService.clearCart(session);
+
+	    session.setAttribute("tempBookingCart", cartItems);
+	    session.setAttribute("tempBookingAccount", account);
+//	    cartService.clearCart(session);
 
 	    return "redirect:/payment/start";
 	}

@@ -27,8 +27,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.bkap.qlks.common.Const;
 import com.bkap.qlks.config.VNPAYConfig;
+import com.bkap.qlks.dto.CartItem;
+import com.bkap.qlks.entity.Account;
 import com.bkap.qlks.entity.Booking;
 import com.bkap.qlks.service.BookingService;
+import com.bkap.qlks.service.CartService;
 import com.bkap.qlks.service.PaymentService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,20 +45,19 @@ public class PaymentController {
 
 	@Autowired
 	BookingService bookingService;
+	
+	@Autowired
+	private CartService cartService;
 
 	@Value("${app.base-url}")
 	private static String baseUrl;
 
 	@GetMapping("/start")
 	public String startPayment(HttpSession session, Model model, RedirectAttributes redirectAttributes) {
-		Long bookingId = (Long) session.getAttribute("bookingId");
-		if (bookingId == null) {
-			redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn đặt phòng để thanh toán!");
-			return "redirect:/";
-		}
-
-		Booking booking = bookingService.getBookingById(bookingId);
-		model.addAttribute("booking", booking);
+		List<CartItem> cartItems = (List<CartItem>) session.getAttribute("tempBookingCart");
+		Integer total = cartItems.size() == 0 ? 0
+				: cartItems.stream().mapToInt(item -> (int) item.getPrice() * item.getNumberDay()).sum();
+		model.addAttribute("totalAmount", total);
 		return "payment/select"; // trang chọn phương thức (VNPay, Momo,...)
 	}
 
@@ -63,20 +65,24 @@ public class PaymentController {
 	@PostMapping("/choose")
 	public String choosePayment(@RequestParam(name ="method") String method, HttpSession session,
 			RedirectAttributes redirectAttributes) {
-		Long bookingId = (Long) session.getAttribute("bookingId");
-		if (bookingId == null) {
-			redirectAttributes.addFlashAttribute("error", "Không tìm thấy đơn đặt phòng!");
-			return "redirect:/";
-		}
+		//remove cart
+		cartService.clearCart(session);
+		//save booking
+		List<CartItem> cartItems = (List<CartItem>) session.getAttribute("tempBookingCart");
+	    Account account = (Account) session.getAttribute("tempBookingAccount");
+	    Booking booking = bookingService.createBooking(account, cartItems);
+	    
+	    session.setAttribute("bookingId", booking.getId());
 
 		if (Const.VNPAY_METHOD.equalsIgnoreCase(method)) {
 //			return "redirect:/payment/vnpay/start";
 			return "redirect:/payment/create";
-		} else if (Const.CASH_METHOD.equalsIgnoreCase(method)) {
-			paymentService.savePaymentStatus(bookingId, Const.CASH_METHOD);
-			redirectAttributes.addFlashAttribute("success", "Đặt phòng thành công! Thanh toán bằng tiền mặt.");
-			return "redirect:/booking/success";
 		}
+//		else if (Const.CASH_METHOD.equalsIgnoreCase(method)) {
+//			paymentService.savePaymentStatus(booking.getId(), Const.CASH_METHOD);
+//			redirectAttributes.addFlashAttribute("success", "Đặt phòng thành công! Thanh toán bằng tiền mặt.");
+//			return "redirect:/booking/success";
+//		}
 
 		redirectAttributes.addFlashAttribute("error", "Phương thức không hợp lệ!");
 		return "redirect:/payment/start";
