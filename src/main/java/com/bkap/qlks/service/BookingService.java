@@ -101,27 +101,38 @@ public class BookingService {
 	    Booking booking = getBookingById(id);
 	    if (booking == null) return;
 
-	    // Lấy danh sách phòng trong booking
 	    List<BookingRoom> rooms = bookingRoomRepository.findByBookingRoomId_BookingId(id);
-
 	    Date now = new Date();
-	    boolean isFinished = rooms.stream()
+
+	    // 1️⃣ KIỂM TRA QUÁ HẠN CHECKOUT → TỰ HỦY
+	    boolean isOverdue = rooms.stream()
 	            .anyMatch(r -> r.getCheckOutDate().before(now));
 
-	    if (isFinished) {
-	        throw new RuntimeException("Đơn đặt phòng đã kết thúc. Không thể hủy nữa.");
+	    if (isOverdue) {
+
+	        // Nếu quá hạn checkout mà chưa thanh toán → tự động hủy
+	        if (!"PAID".equals(booking.getPaymentStatus())) {
+	            booking.setIsCancel(1);
+	            booking.setUpdateAt(now);
+	            bookingRepository.save(booking);
+	        }
+
+	        // Nếu quá hạn và đã thanh toán → không thể hủy
+	        throw new RuntimeException("Đơn đặt phòng đã hoàn tất. Không thể hủy nữa.");
 	    }
 
-	    // Nếu chưa kết thúc → cho hủy
+	    // 2️⃣ NẾU CHƯA QUÁ HẠN → CHO HỦY THỦ CÔNG
 	    booking.setIsCancel(1);
 
+	    // Nếu chưa thanh toán giữ nguyên UNPAID
 	    if (!"PAID".equals(booking.getPaymentStatus())) {
 	        booking.setPaymentStatus("UNPAID");
 	    }
-	    
-	    booking.setUpdateAt(new Date());
+
+	    booking.setUpdateAt(now);
 	    bookingRepository.save(booking);
 	}
+
 	@Autowired
 	private RoomRepository roomRepo;
 
