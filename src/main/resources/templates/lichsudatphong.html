@@ -5,26 +5,33 @@
 
 <head>
 <title>Lịch sử đặt phòng || Hotel Booking</title>
-
 <style>
-/* Thu nhỏ nút hủy */
-.btn-cancel-small {
-	font-size: 12px !important;
-	padding: 3px 10px !important;
-	height: 28px !important;
-	width: 55px !important;
-	text-align: center;
-	line-height: 20px !important;
+/* Nút hủy màu đỏ khi được phép hủy */
+.btn-cancel-active {
+	background-color: #dc3545 !important;
+	border: 1px solid #dc3545 !important;
+	color: white !important;
+	padding: 6px 14px;
+	border-radius: 8px;
+	font-weight: bold;
+	display: inline-block;
 }
 
-.btn-small {
-	font-size: 13px !important;
-	padding: 4px 12px !important;
-	height: 32px !important;
-	line-height: 20px !important;
-	border-radius: 8px !important;
+/* Nút hủy màu xám khi disabled */
+.btn-cancel-disabled {
+	background-color: #b5b5b5 !important;
+	border: 1px solid #9e9e9e !important;
+	color: white !important;
+	padding: 6px 14px;
+	border-radius: 8px;
+	font-weight: bold;
+	display: inline-block;
+	cursor: not-allowed !important;
+	pointer-events: none !important; /* khoá click */
+	opacity: 1 !important;
 }
 
+/* Nút Xuất hóa đơn */
 .btn-small-long {
 	font-size: 14px !important;
 	padding: 6px 14px !important;
@@ -32,6 +39,7 @@
 	border-radius: 10px !important;
 }
 </style>
+
 </head>
 
 <body data-spy="scroll" data-target=".fixed-top">
@@ -50,14 +58,13 @@
 				<table class="table table-hover align-middle shadow-sm">
 					<thead class="table-primary">
 						<tr>
-							<th>#</th>
+							<th>Số thứ tự</th>
 							<th>Mã đặt phòng</th>
 							<th>Ngày đặt</th>
 							<th>Tổng tiền</th>
 							<th>Trạng thái thanh toán</th>
-							<th>Tình trạng</th>
-							<th>Hủy</th>
 							<th>Chi tiết</th>
+							<!-- Đã bỏ cột Tình trạng -->
 						</tr>
 					</thead>
 
@@ -72,33 +79,47 @@
 							<td
 								th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VNĐ'"></td>
 
-							<td><span
-								th:text="${
-                            b.isCancel == 1 ? 'Đã hủy' :
-                            (b.paymentStatus == 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán')
-                        }"></span>
+							<!-- Trạng thái thanh toán -->
+							<td><span th:if="${b.isCancel == 1}">Đã hủy</span> <span
+								th:if="${b.isCancel == 0 and b.paymentStatus == 'PAID'}">Đã
+									thanh toán</span> <span
+								th:if="${b.isCancel == 0 and b.paymentStatus != 'PAID'}">Chưa
+									thanh toán</span></td>
+
+							<td>
+								<!-- Nút xuất hóa đơn --> <a 
+								th:href="@{'/booking/invoice/' + ${b.id}}"
+								class="btn btn-primary btn-small-long me-2"> Xuất Hóa Đơn </a> <!-- LINK HỦY (a) -->
+								<a
+								th:if="${
+            b.isCancel == 0
+            and !(
+                roomsMap[b.id] != null
+                and #lists.size(roomsMap[b.id]) > 0
+                and roomsMap[b.id].get(0).checkOutDate.before(now)
+            )
+        }"
+								th:href="@{'/booking/cancel/' + ${b.id}}"
+								class="btn-cancel-active"
+								onclick="return confirm('Bạn có chắc muốn hủy đơn này không?')">
+									Hủy </a> <!-- LINK DISABLED --> <a
+								th:if="${
+            b.isCancel == 1
+            or (
+                roomsMap[b.id] != null
+                and #lists.size(roomsMap[b.id]) > 0
+                and roomsMap[b.id].get(0).checkOutDate.before(now)
+            )
+        }"
+								class="btn-cancel-disabled"> Hủy </a>
 							</td>
 
-							<td><span
-								th:classappend="${b.isCancel == 1} ? 'badge bg-danger' : 'badge bg-success'"
-								th:text="${b.isCancel == 1 ? 'Đã hủy' : 'Đã đặt'}"> </span></td>
 
-							<!-- Nút Hủy -->
-							<td><a th:if="${b.isCancel == 0}"
-								th:href="@{'/booking/cancel/' + ${b.id}}"
-								class="btn btn-danger btn-sm btn-cancel-small"
-								onclick="return confirm('Bạn có chắc muốn hủy đơn này không?')">
-									Hủy </a> <span th:if="${b.isCancel == 1}" class="text-muted">Đã
-									hủy</span></td>
-
-							<!-- Link Chi tiết -->
-							<td><a th:href="@{'/booking/invoice/' + ${b.id}}"
-								class="btn btn-primary btn-small-long"> Xuất Hóa Đơn </a></td>
 
 						</tr>
 					</tbody>
-
 				</table>
+
 			</div>
 
 		</div>

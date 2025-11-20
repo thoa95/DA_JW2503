@@ -6,7 +6,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
@@ -21,8 +23,10 @@ import com.bkap.qlks.dto.CartItem;
 import com.bkap.qlks.entity.Account;
 import com.bkap.qlks.entity.Booking;
 import com.bkap.qlks.entity.BookingRoom;
+import com.bkap.qlks.entity.Room;
 import com.bkap.qlks.repository.BookingRepository;
 import com.bkap.qlks.repository.BookingRoomRepository;
+import com.bkap.qlks.repository.RoomRepository;
 
 @Service
 public class BookingService {
@@ -93,77 +97,118 @@ public class BookingService {
 	public List<Booking> getBookingsByUsername(String username) {
 		return bookingRepository.findByAccountIdOrderByCreatedAtDesc(username);
 	}
-
 	public void cancelBooking(Long id) {
 	    Booking booking = getBookingById(id);
-	    if (booking != null) {
+	    if (booking == null) return;
 
-	        // 1) Đánh dấu đã hủy
-	        booking.setIsCancel(1);
+	    List<BookingRoom> rooms = bookingRoomRepository.findByBookingRoomId_BookingId(id);
+	    Date now = new Date();
 
-	        // 2) Không được đổi payment_status sang tiếng Việt (sai CHECK)
-	        // Nếu muốn đánh dấu hủy thì chỉ giữ UNPAID hoặc PAID
+	    // 1️⃣ KIỂM TRA QUÁ HẠN CHECKOUT → TỰ HỦY
+	    boolean isOverdue = rooms.stream()
+	            .anyMatch(r -> r.getCheckOutDate().before(now));
+
+	    if (isOverdue) {
+
+	        // Nếu quá hạn checkout mà chưa thanh toán → tự động hủy
 	        if (!"PAID".equals(booking.getPaymentStatus())) {
-	            booking.setPaymentStatus("UNPAID");
+	            booking.setIsCancel(1);
+	            booking.setUpdateAt(now);
+	            bookingRepository.save(booking);
 	        }
 
-	        booking.setUpdateAt(new Date());
-	        bookingRepository.save(booking);
+	        // Nếu quá hạn và đã thanh toán → không thể hủy
+	        throw new RuntimeException("Đơn đặt phòng đã hoàn tất. Không thể hủy nữa.");
 	    }
+
+	    // 2️⃣ NẾU CHƯA QUÁ HẠN → CHO HỦY THỦ CÔNG
+	    booking.setIsCancel(1);
+
+	    // Nếu chưa thanh toán giữ nguyên UNPAID
+	    if (!"PAID".equals(booking.getPaymentStatus())) {
+	        booking.setPaymentStatus("UNPAID");
+	    }
+
+	    booking.setUpdateAt(now);
+	    bookingRepository.save(booking);
 	}
+
+	@Autowired
+	private RoomRepository roomRepo;
+
 	public byte[] exportInvoiceExcel(Long bookingId) {
 	    Booking booking = getBookingById(bookingId);
+	    List<BookingRoom> rooms = bookingRoomRepository.findByBookingRoomId_BookingId(bookingId);
 
 	    try (Workbook workbook = new XSSFWorkbook()) {
+
 	        Sheet sheet = workbook.createSheet("Invoice");
-
-	        // STYLE BOLD
-	        CellStyle headerStyle = workbook.createCellStyle();
-	        Font font = workbook.createFont();
-	        font.setBold(true);
-	        headerStyle.setFont(font);
-
 	        int rowIdx = 0;
 
-	        // --- HEADER ---
-	        Row header = sheet.createRow(rowIdx++);
-	        header.createCell(0).setCellValue("HÓA ĐƠN ĐẶT PHÒNG");
-	        header.getCell(0).setCellStyle(headerStyle);
+	        // HEADER
+	        Row title = sheet.createRow(rowIdx++);
+	        title.createCell(0).setCellValue("HÓA ĐƠN ĐẶT PHÒNG - BORCELLE HOTEL");
 
-	        rowIdx++; // dòng trống
+	        rowIdx++;
 
-	        // --- INFO ---
-	        Row r1 = sheet.createRow(rowIdx++);
-	        r1.createCell(0).setCellValue("Mã đặt phòng:");
-	        r1.createCell(1).setCellValue(booking.getId());
-
-	        Row r2 = sheet.createRow(rowIdx++);
-	        r2.createCell(0).setCellValue("Khách hàng:");
-	        r2.createCell(1).setCellValue(booking.getAccountId());
-
-	        Row r3 = sheet.createRow(rowIdx++);
-	        r3.createCell(0).setCellValue("Ngày đặt:");
-	        r3.createCell(1).setCellValue(booking.getCreatedAt().toString());
-
-	        Row r4 = sheet.createRow(rowIdx++);
-	        r4.createCell(0).setCellValue("Tổng tiền:");
-	        r4.createCell(1).setCellValue(booking.getTotalAmount());
-
-	        Row r5 = sheet.createRow(rowIdx++);
-	        r5.createCell(0).setCellValue("Trạng thái:");
-	        r5.createCell(1).setCellValue(
-	                booking.getIsCancel() == 1 ? "Đã hủy" :
-	                        (booking.getPaymentStatus().equals("PAID") ? "Đã thanh toán" : "Chưa thanh toán")
+	        // BOOKING INFO
+	        sheet.createRow(rowIdx++).createCell(0).setCellValue("Mã đặt phòng: " + booking.getId());
+	        sheet.createRow(rowIdx++).createCell(0).setCellValue("Khách hàng: " + booking.getAccountId());
+	        sheet.createRow(rowIdx++).createCell(0).setCellValue("Ngày đặt: " + booking.getCreatedAt());
+	        sheet.createRow(rowIdx++).createCell(0).setCellValue("Tổng tiền: " + booking.getTotalAmount());
+	        sheet.createRow(rowIdx++).createCell(0).setCellValue(
+	                "Trạng thái: " + (booking.getIsCancel() == 1 ? "Đã hủy"
+	                        : (booking.getPaymentStatus().equals("PAID") ? "Đã thanh toán" : "Chưa thanh toán"))
 	        );
 
-	        // Xuất ra byte[]
+	        rowIdx += 2;
+
+	        // ROOM TABLE HEADER
+	        Row header = sheet.createRow(rowIdx++);
+	        String[] cols = {"Tên phòng", "Diện tích", "Giường", "Giá", "Check-in", "Check-out", "Tiện nghi"};
+	        for (int i = 0; i < cols.length; i++) header.createCell(i).setCellValue(cols[i]);
+
+	        // ROOM LIST
+	        for (BookingRoom br : rooms) {
+	            Room room = roomRepo.findById(br.getBookingRoomId().getRoomId()).orElse(null);
+
+	            Row row = sheet.createRow(rowIdx++);
+
+	            row.createCell(0).setCellValue(room != null ? room.getName() : "N/A");
+	            row.createCell(1).setCellValue(room != null ? room.getArea() : 0);
+	            row.createCell(2).setCellValue(room != null ? room.getBed() : 0);
+	            row.createCell(3).setCellValue(br.getPrice());
+	            row.createCell(4).setCellValue(br.getCheckInDate().toString());
+	            row.createCell(5).setCellValue(br.getCheckOutDate().toString());
+
+	            if (room != null && room.getAmenities() != null) {
+	                String amenities = room.getAmenities().stream()
+	                        .map(a -> a.getName())
+	                        .reduce((a, b) -> a + ", " + b).orElse("");
+	                row.createCell(6).setCellValue(amenities);
+	            } else {
+	                row.createCell(6).setCellValue("Không có");
+	            }
+	        }
+
 	        ByteArrayOutputStream output = new ByteArrayOutputStream();
 	        workbook.write(output);
 	        return output.toByteArray();
-
-	    } catch (IOException e) {
-	        throw new RuntimeException("Lỗi xuất file Excel", e);
+	    } catch (Exception e) {
+	        throw new RuntimeException("Lỗi export Excel", e);
 	    }
 	}
+
+	public Map<Long, List<BookingRoom>> getBookingRoomsMap(List<Booking> list) {
+	    Map<Long, List<BookingRoom>> map = new HashMap<>();
+
+	    for (Booking b : list) {
+	        List<BookingRoom> rooms = bookingRoomRepository.findByBookingRoomId_BookingId(b.getId());
+	        map.put(b.getId(), rooms);
+	    }
+
+	    return map;
+	}
+
 
 }
