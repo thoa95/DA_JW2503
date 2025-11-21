@@ -220,7 +220,7 @@
 						<input type="hidden" name="fromPage" value="danh-sach">
 						<input type="hidden" name="cityId" th:value="${cityId}">
 						<input type="hidden" name="bed" th:value="${bed}">
-						<input type="hidden" name="page" th:value="${page}">
+						<!--<input type="hidden" name="page" th:value="${page}">-->
 								
 						<!-- Ngày nhận -->
 						<div class="col-md-4">
@@ -321,7 +321,7 @@
 			</div>
 
 			<!-- Phân trang -->
-			<div class="mt-4" th:if="${roomPage != null and roomPage.totalPages >= 1}">
+			<!--<div class="mt-4" th:if="${roomPage != null and roomPage.totalPages >= 1}">
 				<nav class="d-flex justify-content-center">
 					<ul class="pagination">
 						<li class="page-item" th:classappend="${roomPage.first}? 'disabled'">
@@ -336,7 +336,58 @@
 						</li>
 					</ul>
 				</nav>
+			</div>-->
+			
+			<div class="mt-4" th:if="${roomPage != null and roomPage.totalPages > 1}">
+				<nav class="d-flex justify-content-center">
+					<ul class="pagination">
+
+						<!-- Prev -->
+						<li class="page-item" th:classappend="${roomPage.first}? 'disabled'">
+							<a class="page-link"
+								th:href="@{/room/search(
+									page=${roomPage.number - 1},
+									cityId=${cityId},
+									bed=${bed},
+									checkIn=${fromDate},
+									checkOut=${toDate},
+									fromPage='danh-sach'
+								)}">«</a>
+						</li>
+
+						<!-- Pages -->
+						<li class="page-item"
+							th:each="i : ${#numbers.sequence(0, roomPage.totalPages - 1)}"
+							th:classappend="${i == roomPage.number}? 'active'">
+							<a class="page-link"
+								th:text="${i + 1}"
+								th:href="@{/room/search(
+									page=${i},
+									cityId=${cityId},
+									bed=${bed},
+									checkIn=${fromDate},
+									checkOut=${toDate},
+									fromPage='danh-sach'
+								)}"></a>
+						</li>
+
+						<!-- Next -->
+						<li class="page-item" th:classappend="${roomPage.last}? 'disabled'">
+							<a class="page-link"
+								th:href="@{/room/search(
+									page=${roomPage.number + 1},
+									cityId=${cityId},
+									bed=${bed},
+									checkIn=${fromDate},
+									checkOut=${toDate},
+									fromPage='danh-sach'
+								)}">»</a>
+						</li>
+
+					</ul>
+				</nav>
 			</div>
+
 		</div>
 
 
